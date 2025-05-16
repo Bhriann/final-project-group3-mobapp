@@ -16,7 +16,7 @@ const LibrarianScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Librarian Dashboard</Text>
       </View>
       <View style={styles.body}>
-        <Text>Welcome, Librarian!</Text>
+        <Text>Welcome, Admin!</Text>
       </View>
     </SafeAreaView>
   );

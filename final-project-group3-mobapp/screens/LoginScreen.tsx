@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, Text, TextInput, View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../App';
+import { RootStackParamList } from '../props and context/navigatorprops';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -12,9 +12,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    if (email === 'admin@example.com' && password === 'admin123') {
-      navigation.navigate('Admin');
-    } else if (email === 'librarian@example.com' && password === 'lib123') {
+    if (email === 'librarian@example.com' && password === 'lib123') {
       navigation.navigate('Librarian');
     } else if (email === 'user@example.com' && password === 'user123') {
       navigation.navigate('User');

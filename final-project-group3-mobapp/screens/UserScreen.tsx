@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import SideMenu from '../components/SideMenu';
 import { FontAwesome } from '@expo/vector-icons';
+import { RenderBooks } from '../components/RenderBooks';
 
 const UserScreen: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -16,7 +17,7 @@ const UserScreen: React.FC = () => {
         <Text style={styles.headerTitle}>User Dashboard</Text>
       </View>
       <View style={styles.body}>
-        <Text>Welcome, User!</Text>
+        <RenderBooks></RenderBooks>
       </View>
     </SafeAreaView>
   );
