@@ -8,7 +8,7 @@ export const RenderBooks = () => {
             showsVerticalScrollIndicator={false}
             data={books}
             keyExtractor={item => item.id}
-            ListEmptyComponent={<Text style={[]}>No Books Yet...</Text>}
+            ListEmptyComponent={<Text style={[]}> No Books Yet...</Text>}
             renderItem={({ item }) => (
 
                 <View style={[]}>
@@ -21,16 +21,14 @@ export const RenderBooks = () => {
                             />
                         )}
                         <Text style={[]}>ID: {item.id}</Text>
-                        <Text style={[]}>ID: {item.title}</Text>
+                        <Text style={[]}>Title: {item.title}</Text>
                     </View>
 
                     <TouchableOpacity
                         onPress={() => {
                            // Add to Bookmarks Function;
                         }}>
-                        <Text style={[]}>
-                            Bookmark
-                        </Text>
+                        <Text style={[]}>Bookmark</Text>
                     </TouchableOpacity>
                 </View>
 

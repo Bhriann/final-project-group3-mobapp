@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { SafeAreaView, Text, TextInput, View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../props and context/navigatorprops';
+import { styles } from '../styles/Stylesheet';
+import { Context } from '../props and context/context';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -11,18 +13,23 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const {admin, users, librarians} = useContext(Context);
+
   const handleLogin = () => {
-    if (email === 'librarian@example.com' && password === 'lib123') {
-      navigation.navigate('Librarian');
+    //this needs to get updated by checking if the user is an admin, user or librarian via our data base.
+    if (email === 'admin@example.com' && password === 'admin123') {
+      navigation.replace('Admin');
+    } else if (email === 'librarian@example.com' && password === 'lib123') {
+        navigation.replace('Librarian');
     } else if (email === 'user@example.com' && password === 'user123') {
-      navigation.navigate('User');
+      navigation.replace('User');
     } else {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.LogInContainer}>
       <Text style={styles.title}>Library Login</Text>
       <TextInput
         placeholder="Email"
@@ -46,46 +53,4 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 export default LoginScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-  },
-  buttonContainer: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
-    borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
 
