@@ -57,6 +57,15 @@ type ContextProviderType = {
 
     currentAccount: string; //current ID ng User Account to keep track of their favorites and their borrowing logs.
     setAccount: (id: string) => void;
+
+    isAdmin: boolean; //0 - Librarian, 1 - Admin
+
+    /*logs
+    logFilterMode: string,  //All, Requested, Checked-Out, Returned
+    filterMode: (mode:string) => void;
+    */
+
+    deleteLogs: (logs_del: string[]) => void;
 };
 
 interface ContextProviderProps {
@@ -74,6 +83,14 @@ export const Context = createContext<ContextProviderType>({
 
     currentAccount: "",
     setAccount: () => {},
+    isAdmin: true,
+
+    deleteLogs: () => {},
+    /*logs
+
+    logFilterMode: "", 
+    filterMode: () => {},
+    */
 });
 
 export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
@@ -95,7 +112,12 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     ])
 
     const [logs, setLogs] = useState<BorrowingLog[]>([
-        { id: "1", bookid: "1", userid: "US000001", dateRequested: "2025-05-10", dateLent: "2025-05-11", dateReturned: undefined }
+        { id: "1", bookid: "1", userid: "US000001", dateRequested: "2025-05-10", dateLent: "2025-05-11", dateReturned: undefined },
+        { id: "2", bookid: "2", userid: "US000001", dateRequested: "2025-05-10", dateLent: undefined, dateReturned: undefined },
+        { id: "3", bookid: "1", userid: "US000002", dateRequested: "2025-05-10", dateLent: "2025-05-17", dateReturned: "2025-05-18" },
+        { id: "4", bookid: "2", userid: "US000002", dateRequested: "2025-05-10", dateLent: "2025-05-17", dateReturned: "2025-05-18" },
+        { id: "5", bookid: "2", userid: "US000002", dateRequested: "2025-05-10", dateLent: "2025-05-17", dateReturned: "2025-05-18" },
+     { id: "6", bookid: "2", userid: "US000002", dateRequested: "2025-05-10", dateLent: "2025-05-17", dateReturned: "2025-05-18" },
     ])
 
     const [favorites, setFavorites] = useState<Favorites[]>([
@@ -134,9 +156,25 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
 
     ]);
 
-    const [currentAccount, setCurrentAccount] = useState<string>("")
+    const [currentAccount, setCurrentAccount] = useState<string>("LB000000");
 
-    const setAccount = (type:string) => setCurrentAccount(type);    //set if user is an admin, libarian or user
+    const [isAdmin, setisAdmin] = useState<boolean>(true);
+
+   /*const [logFilterMode, setLogFilterMode] = useState<string>("Checked-In");
+
+    const filterMode = (mode:string) => {
+        setLogFilterMode(mode);
+    }
+*/
+    const setAccount = (type:string) => {
+        setCurrentAccount(type);
+    }    //set if user is an admin, libarian or user
+
+
+    const deleteLogs = (logs_del:string[]) => {
+       setLogs(prevLogs => prevLogs.filter(prevLog => !logs_del.includes(prevLog.id)));
+    }
+   
 
      /* Fonts paki-ignore muna
     const [fontsLoaded] = useFonts({
@@ -151,7 +189,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
 */
     return (
         //Call The UseStates here
-        <Context.Provider value={{ books, genres, admin, librarians, users, logs, favorites, currentAccount, setAccount}}>
+        <Context.Provider value={{ books, genres, admin, librarians, users, logs, favorites, currentAccount, setAccount, isAdmin, deleteLogs}}>
             {children}
         </Context.Provider>
     );

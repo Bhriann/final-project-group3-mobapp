@@ -1,24 +1,23 @@
-import React, {useState, useContext} from 'react';
-import { SafeAreaView, Text, View, TouchableOpacity } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { SafeAreaView, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 //import { FontAwesome } from '@expo/vector-icons';
 import { styles } from '../../../styles/Stylesheet';
 import { Context } from '../../../props and context/context';
+import { RenderLogs } from '../../../components/RenderLogs';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const LogsScreen: React.FC = () => {
- //add the parameters here coming from context.tsx
-     const {} = useContext(Context);
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}> LogScreen</Text>
-      </View>
-      <View style={styles.body}>
-        <Text>Show all pending borrowing request and approve them</Text>
-        <Text>Add to the borrowing logs</Text>
-        <Text>Change borrowing status to returned</Text>
+  const { } = useContext(Context);
+  const changeOrientation = async () => {
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT); //Change Landscape
+    await ScreenOrientation.unlockAsync();
+  }
 
-        <Text> If user is an admin, Edit and Delete Logs functionality</Text>
-      </View>
+  changeOrientation();
+  return (
+     
+    <SafeAreaView style={styles.container}>
+      <RenderLogs></RenderLogs>
     </SafeAreaView>
   );
 };

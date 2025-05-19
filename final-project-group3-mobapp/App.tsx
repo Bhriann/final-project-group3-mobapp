@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, SafeAreaView } from 'react-native';
+import { StatusBar, SafeAreaView, useWindowDimensions,  } from 'react-native';
 
 //Navigation and Context
 import { NavigationContainer } from '@react-navigation/native';
@@ -24,6 +24,9 @@ const Tabs = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   //Screens Admins could use
   function Admin() {
@@ -58,10 +61,10 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
+    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, paddingHorizontal: isLandscape ? 30 : 0 }}>
       <ContextProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+          <Stack.Navigator initialRouteName="Admin" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Admin" component={Admin} />
             <Stack.Screen name="Librarian" component={Librarian} />

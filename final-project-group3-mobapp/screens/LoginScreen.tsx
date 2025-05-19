@@ -13,7 +13,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const {admin, users, librarians} = useContext(Context);
+  const {admin, users, librarians, setAccount} = useContext(Context);
 
   const handleLogin = () => {
     //this needs to get updated by checking if the user is an admin, user or librarian via our data base.
