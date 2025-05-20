@@ -1,11 +1,21 @@
-import React, { useState, useContext, useEffect } from "react";
-import { FlatList, View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState, useContext, useEffect, } from "react";
+import { FlatList, View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import { Context } from "../props and context/context";
 import { styles } from "../styles/Stylesheet";
+import dayjs, { Dayjs } from "dayjs";
+import DateTimePicker, { useDefaultStyles } from 'react-native-ui-datepicker';
+
+type DateType = string | number | Dayjs | Date | null | undefined;
+
 export const RenderLogs = () => {
     const { logs, isAdmin, deleteLogs } = useContext(Context);
-    const [filteredLogs, setFilteredLogs,] = useState(logs);
-    const [filterOrder, setFilterOrder] = useState(false);  //false = DESC, true = ASC
+    const [filteredLogs, setFilteredLogs] = useState(logs);
+    const [filterOrder, setFilterOrder] = useState(false); // false = DESC, true = ASC
+
+    const [startDate, setStartDate] = useState<Date | null>(new Date());
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [showDatePicker, setShowDatePicker] = useState(false); // Modal toggle
+
     const filterAll = () => { setFilteredLogs(logs); }
     const filterRequested = () => { setFilteredLogs(logs.filter((item) => (item.dateLent === undefined && item.dateReturned === undefined))); }
     const filterCheckedOut = () => { setFilteredLogs(logs.filter((item) => (item.dateLent !== undefined && item.dateReturned === undefined))); }
@@ -20,13 +30,23 @@ export const RenderLogs = () => {
 
     return (
         <View style={{ flex: 1 }}>
+            {/* Buttons */}
             <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-                <TouchableOpacity onPress={filterAll}> <Text style={[{ paddingHorizontal: 10 }]}>All</Text> </TouchableOpacity>
-                <TouchableOpacity onPress={filterRequested}> <Text style={[{ paddingHorizontal: 10 }]}>Requested</Text> </TouchableOpacity>
-                <TouchableOpacity onPress={filterCheckedOut}> <Text style={[{ paddingHorizontal: 10 }]}>Checked-Out</Text> </TouchableOpacity>
-                <TouchableOpacity onPress={filterReturned}> <Text style={[{ paddingHorizontal: 10 }]}>Returned</Text> </TouchableOpacity>
-                <TouchableOpacity onPress={() => setFilterOrder(!filterOrder)}> <Text style={[{ paddingHorizontal: 10 }]}>{filterOrder ? "DESC" : "ASC"}</Text> </TouchableOpacity>
+                <TouchableOpacity onPress={filterAll}> <Text style={{ paddingHorizontal: 10 }}>All</Text> </TouchableOpacity>
+                <TouchableOpacity onPress={filterRequested}> <Text style={{ paddingHorizontal: 10 }}>Requested</Text> </TouchableOpacity>
+                <TouchableOpacity onPress={filterCheckedOut}> <Text style={{ paddingHorizontal: 10 }}>Checked-Out</Text> </TouchableOpacity>
+                <TouchableOpacity onPress={filterReturned}> <Text style={{ paddingHorizontal: 10 }}>Returned</Text> </TouchableOpacity>
+                <TouchableOpacity onPress={() => setFilterOrder(!filterOrder)}> <Text style={{ paddingHorizontal: 10 }}>{filterOrder ? "DESC" : "ASC"}</Text> </TouchableOpacity>
+
+                {/* Button to open Date Picker Modal */}
+                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                    <Text style={{ paddingHorizontal: 10 }}>
+                        {`${dayjs(startDate).format("YYYY-MM-DD")} — ${dayjs(endDate).format("YYYY-MM-DD")}`}
+                    </Text>
+                </TouchableOpacity>
             </View>
+
+            {/* Table Header */}
             <View style={[styles.table_header]}>
                 <Text style={[styles.heading]}>ID</Text>
                 <Text style={[styles.heading]}>User</Text>
@@ -34,8 +54,11 @@ export const RenderLogs = () => {
                 <Text style={[styles.heading]}>Date Requested</Text>
                 <Text style={[styles.heading]}>Date Lent</Text>
                 <Text style={[styles.heading]}>Date Returned</Text>
-                <Text style={[styles.heading]}>{isAdmin ? "Actions" : ""}</Text>
+                <Text style={[styles.heading]}>{isAdmin ? "Edit" : ""}</Text>
+                <Text style={[styles.heading]}>{isAdmin ? "Delete" : ""}</Text>
             </View>
+
+            {/* Logs List */}
             <FlatList
                 style={{ flex: 1 }}
                 data={filteredLogs}
@@ -49,10 +72,41 @@ export const RenderLogs = () => {
                         <Text style={styles.cell}>{item.dateLent || ''}</Text>
                         <Text style={styles.cell}>{item.dateReturned || ''}</Text>
                         <Text style={styles.cell}>{isAdmin ? 'Edit' : ''}</Text>
-                        <TouchableOpacity onPress={() => deleteLogs([item.id])}><Text style={styles.cell}>{isAdmin ? 'Delete' : ''}</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => deleteLogs([item.id])}>
+                            <Text style={styles.cell}>{isAdmin ? 'Delete' : ''}</Text>
+                        </TouchableOpacity>
                     </View>
                 )}
             />
+
+            {/* Date Picker Modal */}
+            <Modal visible={showDatePicker} animationType="slide" transparent={false}>
+                <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
+                    <DateTimePicker
+                        mode="range"
+                        maxDate={dayjs()}
+                        startDate={startDate}
+                        endDate={endDate}
+                        onChange={({ startDate, endDate }) => {
+                            setStartDate(startDate instanceof Date ? startDate : null);
+                            setEndDate(endDate instanceof Date ? endDate : null);
+                        }}
+                        styles={useDefaultStyles()}
+                    />
+                    <TouchableOpacity
+                        style={{
+                            marginTop: 20,
+                            padding: 15,
+                            backgroundColor: '#007AFF',
+                            borderRadius: 8,
+                            alignItems: 'center',
+                        }}
+                        onPress={() => setShowDatePicker(false)}
+                    >
+                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </View>
     );
 };

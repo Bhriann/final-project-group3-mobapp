@@ -10,7 +10,7 @@ const LogsScreen: React.FC = () => {
   const { } = useContext(Context);
   const changeOrientation = async () => {
     await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT); //Change Landscape
-    await ScreenOrientation.unlockAsync();
+    //await ScreenOrientation.unlockAsync();
   }
 
   changeOrientation();

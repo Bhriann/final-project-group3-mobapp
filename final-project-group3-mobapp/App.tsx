@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, SafeAreaView, useWindowDimensions,  } from 'react-native';
+import { StatusBar, SafeAreaView, useWindowDimensions } from 'react-native';
 
 //Navigation and Context
 import { NavigationContainer } from '@react-navigation/native';
@@ -17,58 +17,48 @@ import AccountsScreen from './screens/Librarian/Admin/AccountsScreen';
 import LogsScreen from './screens/Librarian/Admin/LogsScreen';
 import ReportsScreen from './screens/Librarian/Admin/ReportsScreen';
 
-
-//For Log-In Screen, No bottom menu
 const Tabs = createBottomTabNavigator();
-//For User or Librarian Screens
 const Stack = createNativeStackNavigator();
 
-export default function App() {
 
+
+// Tab Navigators
+export const AdminTabs = () => (
+  <Tabs.Navigator initialRouteName="BooksScreen" screenOptions={{ headerShown: false }}>
+    <Tabs.Screen name="BooksScreen" component={BooksScreen} />
+    <Tabs.Screen name="AccountsScreen" component={AccountsScreen} />
+    <Tabs.Screen name="LogsScreen" component={LogsScreen} />
+    <Tabs.Screen name="ReportsScreen" component={ReportsScreen} />
+  </Tabs.Navigator>
+);
+
+export const LibrarianTabs = () => (
+  <Tabs.Navigator initialRouteName="LogsScreen" screenOptions={{ headerShown: false }}>
+    <Tabs.Screen name="LogsScreen" component={LogsScreen} />
+    <Tabs.Screen name="BooksScreen" component={BooksScreen} />
+  </Tabs.Navigator>
+);
+
+export const UserTabs = () => (
+  <Tabs.Navigator initialRouteName="UserScreen" screenOptions={{ headerShown: false }}>
+    <Tabs.Screen name="UserScreen" component={UserScreen} />
+    <Tabs.Screen name="ProfileScreen" component={ProfileScreen} />
+  </Tabs.Navigator>
+);
+
+// --- Main App Component ---
+export default function App() {
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-
-  //Screens Admins could use
-  function Admin() {
-    return (
-      <Tabs.Navigator initialRouteName="BooksScreen" screenOptions={{ headerShown: false }} >
-        <Tabs.Screen name="BooksScreen" component={BooksScreen} />
-        <Tabs.Screen name="AccountsScreen" component={AccountsScreen} />
-        <Tabs.Screen name="LogsScreen" component={LogsScreen} />
-        <Tabs.Screen name="ReportsScreen" component={ReportsScreen} />
-      </Tabs.Navigator>
-    )
-  }
-
-  //Screens Librarians could use
-  function Librarian() {
-    return (
-      <Tabs.Navigator initialRouteName="LogsScreen" screenOptions={{ headerShown: false }} >
-        <Tabs.Screen name="LogsScreen" component={LogsScreen} />
-        <Tabs.Screen name="BooksScreen" component={BooksScreen} />
-      </Tabs.Navigator>
-    )
-  }
-
-  //Screens the User could use
-  function User() {
-    return (
-      <Tabs.Navigator initialRouteName="UserScreen" screenOptions={{ headerShown: false }}>
-        <Tabs.Screen name="UserScreen" component={UserScreen} />
-        <Tabs.Screen name="ProfileScreen" component={ProfileScreen} />
-      </Tabs.Navigator>
-    )
-  }
-
   return (
-    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, paddingHorizontal: isLandscape ? 30 : 0 }}>
+    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, paddingLeft: isLandscape ? 50 : 0 }}>
       <ContextProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Admin" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Admin" component={Admin} />
-            <Stack.Screen name="Librarian" component={Librarian} />
-            <Stack.Screen name="User" component={User} />
+            <Stack.Screen name="Admin" component={AdminTabs} />
+            <Stack.Screen name="Librarian" component={LibrarianTabs} />
+            <Stack.Screen name="User" component={UserTabs} />
           </Stack.Navigator>
         </NavigationContainer>
       </ContextProvider>

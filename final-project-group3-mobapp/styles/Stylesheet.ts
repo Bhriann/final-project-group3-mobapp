@@ -59,16 +59,18 @@ export const styles = StyleSheet.create({
   },
   table_header: {
     flexDirection: 'row',
+    justifyContent:'space-between',
     padding: 10,
   },
 
   heading: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   row: {
     flexDirection: 'row',
+    justifyContent:'space-between',
     padding: 10,
     marginVertical: 1,
     backgroundColor: '#fff',
@@ -77,7 +79,7 @@ export const styles = StyleSheet.create({
   },
   cell: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 10,
     textAlign: 'left',
   }
 });
