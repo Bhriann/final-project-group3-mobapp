@@ -19,45 +19,72 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  LogInContainer: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-  },
-  buttonContainer: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
-    borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  table_header: {
+    LogInContainer: {
+      flex: 1,
+      padding: 20,
+      justifyContent: 'center',
+      backgroundColor: '#f5f5f5',
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 30,
+      textAlign: 'center',
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      padding: 10,
+      marginBottom: 15,
+      borderRadius: 5,
+      width: '90%',
+      maxWidth: 400,
+      alignSelf: 'center',
+      backgroundColor: '#fff',
+    },
+    buttonContainer: {
+      backgroundColor: '#007BFF',
+      paddingVertical: 15,
+      borderRadius: 5,
+      width: '90%',
+      maxWidth: 400,
+      alignSelf: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    buttonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    passwordInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      marginBottom: 15,
+      backgroundColor: '#fff',
+      width: '90%',
+      maxWidth: 400,
+      alignSelf: 'center',
+    },
+
+    passwordInput: {
+      flex: 1,
+      padding: 10,
+    },
+
+    showButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+    },
+
+    showButtonText: {
+      color: '#007BFF',
+      fontWeight: 'bold',
+    },
+    table_header: {
     flexDirection: 'row',
     justifyContent:'space-between',
     padding: 10,
@@ -82,4 +109,5 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     textAlign: 'left',
   }
+  
 });

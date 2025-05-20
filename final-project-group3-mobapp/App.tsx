@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';//npm i
 
 //Screens
 import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen'; //added
 import UserScreen from './screens/User/UserScreen';
 import BooksScreen from './screens/Librarian/Admin/BooksScreen';
 import ProfileScreen from './screens/User/ProfileScreen';
@@ -19,8 +20,6 @@ import ReportsScreen from './screens/Librarian/Admin/ReportsScreen';
 
 const Tabs = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
-
 
 // Tab Navigators
 export const AdminTabs = () => (
