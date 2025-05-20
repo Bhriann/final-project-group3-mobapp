@@ -56,5 +56,32 @@ export const styles = StyleSheet.create({
       color: '#fff',
       fontSize: 16,
       fontWeight: 'bold',
-    }
+    },
+    passwordInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      marginBottom: 15,
+      backgroundColor: '#fff',
+      width: '90%',
+      maxWidth: 400,
+      alignSelf: 'center',
+    },
+
+    passwordInput: {
+      flex: 1,
+      padding: 10,
+    },
+
+    showButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+    },
+
+    showButtonText: {
+      color: '#007BFF',
+      fontWeight: 'bold',
+    },
   });
