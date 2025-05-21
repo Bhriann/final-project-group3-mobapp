@@ -5,7 +5,7 @@ import { StatusBar, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ContextProvider } from './props and context/context';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';//npm install @react-navigation/bottom-tabs
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; //npm install @react-navigation/bottom-tabs
 //import { RootStackParamList } from './props and context/navigatorprops';
 
 //Screens
@@ -48,14 +48,16 @@ export const UserTabs = () => (
 // --- Main App Component ---
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SignUp" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="Admin" component={AdminTabs} />
-        <Stack.Screen name="Librarian" component={LibrarianTabs} />
-        <Stack.Screen name="User" component={UserTabs} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ContextProvider> 
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SignUp" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="Admin" component={AdminTabs} />
+          <Stack.Screen name="Librarian" component={LibrarianTabs} />
+          <Stack.Screen name="User" component={UserTabs} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ContextProvider>  
   );
 }

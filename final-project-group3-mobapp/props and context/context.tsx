@@ -53,6 +53,7 @@ type ContextProviderType = {
     librarians: Accounts[];
     users: Accounts[];
     setUsers: React.Dispatch<React.SetStateAction<Accounts[]>>; // 
+    setLibrarians: React.Dispatch<React.SetStateAction<Accounts[]>>; // 
     logs: BorrowingLog[];
     favorites: Favorites[];
     currentAccount: string; //current ID ng User Account to keep track of their favorites and their borrowing logs.
@@ -70,6 +71,7 @@ export const Context = createContext<ContextProviderType>({
     librarians: [],
     users: [],
     setUsers: () => {}, // 
+    setLibrarians: () => {}, // 
     logs: [],
     favorites: [],
     currentAccount: "",
@@ -158,7 +160,8 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
                 admin,
                 librarians,
                 users,
-                setUsers, // 
+                setUsers, //
+                setLibrarians, //  
                 logs,
                 favorites,
                 currentAccount,

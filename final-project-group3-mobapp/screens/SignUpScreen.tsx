@@ -14,14 +14,25 @@ export interface Props {
 }
 
 const SignUpScreen: React.FC<Props> = ({ navigation }) => {
-  const { users, /*setUsers,*/ setAccount } = useContext(Context);
+  const { users, setUsers, setAccount } = useContext(Context);
   const [showPassword, setShowPassword] = useState(false);
 
   const SignUpSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string().min(4, 'Too short').required('Password is required'),
-  });
+  name: Yup.string().required('Name is required'),
+  email: Yup.string()
+    .email('Invalid email format')
+    .matches(
+      /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+      'Email must be a valid domain (e.g., .com)'
+    )
+    .required('Email is required'),
+  password: Yup.string()
+    .min(4, 'Too short')
+    .required('Password is required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), ''], 'Passwords must match')
+    .required('Please confirm your password'),
+});
 
   const handleSignUp = (values: { name: string; email: string; password: string }) => {
   const { name, email, password } = values;
@@ -33,29 +44,29 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     return;
   }
 
- /* const newUser = {
-    id: US${(users.length + 1).toString().padStart(6, '0')}, // ID
-    username: name,  // 
-    email,
-    password
-  };*/
+  const newUser = {
+  id: `US${(users.length + 1).toString().padStart(6, '0')}`,
+  username: name,
+  email,
+  password
+};
 
-  //setUsers([...users, newUser]);
-  //setAccount(newUser.id); // log them in
-  navigation.navigate('User');
+setUsers([...users, newUser]);   
+setAccount(newUser.id);          
+navigation.navigate('User');     
 };
 
 
   return (
     <SafeAreaView style={styles.LogInContainer}>
-      <Text style={styles.title}>User Sign Up</Text>
+      <Text style={styles.title}>Bookman Sign Up</Text>
 
       <Formik
-        initialValues={{ name: '', email: '', password: '' }}
+        initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
         validationSchema={SignUpSchema}
         onSubmit={handleSignUp}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid, dirty }) => (
           <>
             <TextInput
               placeholder="Full Name"
@@ -76,27 +87,45 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             />
             {errors.email && touched.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
 
-            <View style={{ width: '90%', maxWidth: 400, alignSelf: 'center' }}>
-              <TextInput
-                placeholder="Password"
-                style={styles.input}
-                secureTextEntry={!showPassword}
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Text style={{ color: '#007BFF', alignSelf: 'flex-end', marginBottom: 10 }}>
-                  {showPassword ? 'Hide' : 'Show'}
-                </Text>
-              </TouchableOpacity>
+            <View style={styles.passwordInputContainer}>
+            <TextInput
+               placeholder="Password"
+               style={styles.passwordInput}
+               secureTextEntry={!showPassword}
+               onChangeText={handleChange('password')}
+               onBlur={handleBlur('password')}
+               value={values.password}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.showButton}>
+            <Text style={styles.showButtonText}>{showPassword ? 'Hide' : 'Show'}</Text>
+            </TouchableOpacity>
             </View>
-            {errors.password && touched.password && (
-              <Text style={{ color: 'red' }}>{errors.password}</Text>
+               {errors.password && touched.password && (
+              <Text style={{ color: 'red', alignSelf: 'center' }}>{errors.password}</Text>
             )}
 
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => handleSubmit()}>
-              <Text style={styles.buttonText}>Sign Up</Text>
+          <View style={styles.passwordInputContainer}>
+             <TextInput
+                placeholder="Confirm Password"
+                style={styles.passwordInput}
+                secureTextEntry={!showPassword}
+                onChangeText={handleChange('confirmPassword')}
+                onBlur={handleBlur('confirmPassword')}
+                value={values.confirmPassword}
+           />
+           </View>
+               {errors.confirmPassword && touched.confirmPassword && (
+           <Text style={{ color: 'red', alignSelf: 'center' }}>{errors.confirmPassword}</Text> 
+            )}
+            <TouchableOpacity
+               style={[
+               styles.buttonContainer,
+               !(isValid && dirty) && { backgroundColor: '#ccc' } // gray out if not valid
+            ]}
+               onPress={() => handleSubmit()}
+               disabled={!(isValid && dirty)}
+            >
+            <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
 
             {/* Navigate to Log In screen */}
