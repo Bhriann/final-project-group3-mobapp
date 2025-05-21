@@ -1,5 +1,16 @@
 import React, { useState, useContext } from 'react';
-import { SafeAreaView, Text, TextInput, View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../props and context/navigatorprops';
 import { styles } from '../styles/Stylesheet';
@@ -13,14 +24,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const {admin, users, librarians} = useContext(Context);
+  const { admin, users, librarians } = useContext(Context);
 
   const handleLogin = () => {
-    //this needs to get updated by checking if the user is an admin, user or librarian via our data base.
     if (email === 'admin@example.com' && password === 'admin123') {
       navigation.replace('Admin');
     } else if (email === 'librarian@example.com' && password === 'lib123') {
-        navigation.replace('Librarian');
+      navigation.replace('Librarian');
     } else if (email === 'user@example.com' && password === 'user123') {
       navigation.replace('User');
     } else {
@@ -29,28 +39,51 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.LogInContainer}>
-      <Text style={styles.title}>Library Login</Text>
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        autoCapitalize="none"
-        onChangeText={setEmail}
-        value={email}
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={60}
+    >
+      <ScrollView
+        contentContainerStyle={styles.LogInContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Image
+          source={require('../images/LibriLogo.png')}
+          style={localStyles.logo}
+        />
+        <Text style={styles.title}>Login</Text>
+        <TextInput
+          placeholder="Email"
+          style={styles.input}
+          autoCapitalize="none"
+          onChangeText={setEmail}
+          value={email}
+        />
+        <TextInput
+          placeholder="Password"
+          style={styles.input}
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
-export default LoginScreen;
+// Only for the logo
+const localStyles = StyleSheet.create({
+  logo: {
+    width: 250,
+    height: 250,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 0.25,
+  },
+});
 
+export default LoginScreen;
