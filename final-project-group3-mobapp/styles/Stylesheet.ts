@@ -84,6 +84,80 @@ export const styles = StyleSheet.create({
       color: '#007BFF',
       fontWeight: 'bold',
     },
+
+      sectionHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    alignSelf: 'center',
+  },
+  listItem: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: 12,
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 5,
+  marginBottom: 10,
+  backgroundColor: '#fff',
+  width: '90%',
+  alignSelf: 'center',
+  flexWrap: 'wrap', 
+  },
+
+  listItemText: {
+  fontSize: 14,
+  flexShrink: 1,
+  flexWrap: 'wrap',
+  },
+
+  deleteButton: {
+    color: '#FF3B30',
+    fontWeight: 'bold',
+  },
+  addButton: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 6,
+    marginTop: 20,
+    width: '90%',
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  roleButton: {
+  flex: 1,
+  padding: 12,
+  borderRadius: 5,
+  backgroundColor: '#e0e0e0',
+  marginHorizontal: 5,
+  alignItems: 'center',
+},
+
+roleButtonSelected: {
+  backgroundColor: '#007BFF',
+  borderWidth: 1,
+  borderColor: '#005FCC',
+},
+
+cancelButton: {
+  padding: 12,
+  borderRadius: 5,
+  backgroundColor: '#ccc',
+  alignItems: 'center',
+  width: '48%',
+},
+
+cancelButtonText: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#333',
+},
     table_header: {
     flexDirection: 'row',
     justifyContent:'space-between',

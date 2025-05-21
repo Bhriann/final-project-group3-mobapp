@@ -5,7 +5,7 @@ import { StatusBar, SafeAreaView, useWindowDimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ContextProvider } from './props and context/context';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';//npm install @react-navigation/bottom-tabs
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; //npm install @react-navigation/bottom-tabs
 //import { RootStackParamList } from './props and context/navigatorprops';
 
 //Screens
