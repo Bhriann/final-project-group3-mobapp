@@ -1,14 +1,13 @@
 import React from 'react';
 import { StatusBar, SafeAreaView, useWindowDimensions } from 'react-native';
 
-//Navigation and Context
+// Navigation and Context
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ContextProvider } from './props and context/context';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'; //npm install @react-navigation/bottom-tabs
-//import { RootStackParamList } from './props and context/navigatorprops';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-//Screens
+// Screens
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen'; //added
 import UserScreen from './screens/User/UserScreen';
@@ -17,6 +16,12 @@ import ProfileScreen from './screens/User/ProfileScreen';
 import AccountsScreen from './screens/Librarian/Admin/AccountsScreen';
 import LogsScreen from './screens/Librarian/Admin/LogsScreen';
 import ReportsScreen from './screens/Librarian/Admin/ReportsScreen';
+
+// Import AddBookScreen (make sure this file exists)
+import AddBookScreen from './screens/Librarian/Admin/AddBookScreen';
+
+// Import the new LoadingScreen
+import LoadingScreen from './screens/LoadingScreen'; // Adjust path if needed
 
 const Tabs = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -35,6 +40,7 @@ export const LibrarianTabs = () => (
   <Tabs.Navigator initialRouteName="LogsScreen" screenOptions={{ headerShown: false }}>
     <Tabs.Screen name="LogsScreen" component={LogsScreen} />
     <Tabs.Screen name="BooksScreen" component={BooksScreen} />
+    <Tabs.Screen name="AddBook" component={AddBookScreen} />
   </Tabs.Navigator>
 );
 

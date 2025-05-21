@@ -108,4 +108,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
+// Only for the logo
+const localStyles = StyleSheet.create({
+  logo: {
+    width: 250,
+    height: 250,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 0.25,
+  },
+});
+
 export default LoginScreen;
