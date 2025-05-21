@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from "dayjs";
 import { useState, ReactNode, useEffect, createContext } from "react";
 import { ImageSourcePropType } from "react-native";
 //import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,6 +19,7 @@ interface Book {
     genre: string[];
     copies: number;
     availability: boolean;  //Available, Checked-Out
+    
 }
 
 // ACCOUNT TYPE
@@ -66,6 +68,8 @@ type ContextProviderType = {
     */
 
     deleteLogs: (logs_del: string[]) => void;
+    selectedBook: string;
+    setSelectedBookId: (bookid: string) => void;
 };
 
 interface ContextProviderProps {
@@ -86,6 +90,9 @@ export const Context = createContext<ContextProviderType>({
     isAdmin: true,
 
     deleteLogs: () => {},
+   
+    selectedBook: "",
+    setSelectedBookId: () => {},
     /*logs
 
     logFilterMode: "", 
@@ -174,6 +181,9 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
        setLogs(prevLogs => prevLogs.filter(prevLog => !logs_del.includes(prevLog.id)));
     }
    
+    const [selectedBook, setSelectedBook] = useState<string>("");
+
+    const setSelectedBookId = (bookid: string) => {setSelectedBook(bookid)};
 
  /* Fonts paki-ignore muna
     const [fontsLoaded] = useFonts({
@@ -189,7 +199,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     
     return (
         //Call The UseStates here
-        <Context.Provider value={{ books, genres, admin, librarians, users, logs, favorites, currentAccount, setAccount, isAdmin, deleteLogs, setUsers}}>
+        <Context.Provider value={{ books, genres, admin, librarians, users, logs, favorites, currentAccount, setAccount, isAdmin, deleteLogs, setUsers, setSelectedBookId, selectedBook}}>
             {children}
         </Context.Provider>
     );
