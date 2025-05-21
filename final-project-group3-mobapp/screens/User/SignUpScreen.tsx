@@ -39,8 +39,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   setUsers([...users, newUser]);
-  setAccount(newUser.id); // log them in
-  navigation.replace('User');
+  navigation.replace('Login');
 };
 
 

@@ -53,7 +53,7 @@ export default function App() {
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight, paddingLeft: isLandscape ? 50 : 0 }}>
       <ContextProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+          <Stack.Navigator initialRouteName="Admin" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={LoginScreen} />
              <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Admin" component={AdminTabs} />
