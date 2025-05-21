@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Context } from '../../../props and context/context';
 import { styles } from '../../../styles/Stylesheet';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 type RootStackParamList = {
   Login: undefined;
@@ -17,6 +18,35 @@ type BooksScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, '
 const BooksScreen = () => {
   const { books, updateBooks } = useContext(Context);
   const navigation = useNavigation<BooksScreenNavigationProp>();
+
+  const [showOrientationWarning, setShowOrientationWarning] = useState(true);
+   const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
+
+  useEffect(() => {
+  const init = async () => {
+    const initialOrientation = await ScreenOrientation.getOrientationAsync();
+    setOrientation(initialOrientation);
+
+    // Only show warning if initially in portrait
+    if (
+      initialOrientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
+      initialOrientation === ScreenOrientation.Orientation.PORTRAIT_DOWN
+    ) {
+      setShowOrientationWarning(true);
+    }
+
+    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+      setOrientation(event.orientationInfo.orientation);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  };
+
+  init();
+}, []);
+
 
   const handleLogout = () => {
     navigation.replace('Login');
@@ -52,6 +82,23 @@ const BooksScreen = () => {
     ]);
   };
 
+  const handleChangeOrientation = async () => {
+  try {
+    setShowOrientationWarning(false);
+
+    // Lock temporarily to landscape left
+    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+
+    // Unlock after a short delay to allow rotation animation
+    setTimeout(async () => {
+      await ScreenOrientation.unlockAsync();
+    }, 10000);
+  } catch (error) {
+    console.warn('Failed to change orientation', error);
+  }
+};
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
@@ -82,7 +129,7 @@ const BooksScreen = () => {
           <View key={book.id} style={{ flexDirection: 'row', padding: 10, borderBottomWidth: 1, alignItems: 'center' }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontWeight: 'bold' }}>{book.title}</Text>
-              <Text>Author(s): {book.authors}</Text>
+              <Text>Author(s): {book.author}</Text>
               {book.cover ? <Image source={{ uri: book.cover }} style={{ width: 100, height: 150 }} /> : null}
             </View>
             <TouchableOpacity
@@ -94,7 +141,39 @@ const BooksScreen = () => {
             </TouchableOpacity>
           </View>
         ))}
+
+        
       </ScrollView>
+
+      {/* Orientation Warning Modal */}
+      <Modal
+        visible={showOrientationWarning}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowOrientationWarning(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.warningText}>
+              For the best experience, we recommend using landscape mode.
+            </Text>
+            <View style={styles.warningButtons}>
+              <TouchableOpacity
+                onPress={() => setShowOrientationWarning(false)}
+                style={styles.dismissButton}
+              >
+                <Text style={styles.dismissButtonText}>Dismiss</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleChangeOrientation}
+                style={styles.continueButton}
+              >
+                <Text style={styles.continueButtonText}>Change to Landscape</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

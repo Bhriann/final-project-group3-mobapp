@@ -6,6 +6,8 @@ import dayjs, { Dayjs } from "dayjs";
 import isBetween from "dayjs/plugin/isBetween"
 dayjs.extend(isBetween)
 
+import EllipsisText from "./EllipsisText";
+
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export const RenderLogs = () => {
@@ -82,50 +84,50 @@ export const RenderLogs = () => {
             {/* Buttons */}
             <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <TouchableOpacity onPress={filterAll}>
-                    <Text style={{ paddingHorizontal: 10 }}>All</Text>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>All</EllipsisText>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={filterRequested}>
-                    <Text style={{ paddingHorizontal: 10 }}>Requested</Text>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>Requested</EllipsisText>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={filterCheckedOut}>
-                    <Text style={{ paddingHorizontal: 10 }}>Checked-Out</Text>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>Checked-Out</EllipsisText>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={filterReturned}>
-                    <Text style={{ paddingHorizontal: 10 }}>Returned</Text>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>Returned</EllipsisText>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setFilterOrder(!filterOrder)}>
-                    <Text style={{ paddingHorizontal: 10 }}>{filterOrder ? "DESC" : "ASC"}</Text>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>{filterOrder ? "DESC" : "ASC"}</EllipsisText>
                 </TouchableOpacity>
 
                 {/* Start Date Button */}
                 <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
-                    <Text style={{ paddingHorizontal: 10 }}>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>
                         From: {dayjs(startDate).format("YYYY-MM-DD")}
-                    </Text>
+                    </EllipsisText>
                 </TouchableOpacity>
 
                 {/* End Date Button */}
                 <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
-                    <Text style={{ paddingHorizontal: 10 }}>
+                    <EllipsisText style={{ paddingHorizontal: 10 }}>
                         To: {dayjs(endDate).format("YYYY-MM-DD")}
-                    </Text>
+                    </EllipsisText>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={clearDates}>
-                    <Text style={{ paddingHorizontal: 10, color: 'red' }}>Reset</Text>
+                    <EllipsisText style={{ paddingHorizontal: 10, color: 'red' }}>Reset</EllipsisText>
                 </TouchableOpacity>
             </View>
 
             {/* Table Header */}
             <View style={[styles.table_header]}>
-                <Text style={[styles.heading]}>ID</Text>
-                <Text style={[styles.heading]}>User</Text>
-                <Text style={[styles.heading]}>Book</Text>
-                <Text style={[styles.heading]}>Date Requested</Text>
-                <Text style={[styles.heading]}>Date Lent</Text>
-                <Text style={[styles.heading]}>Date Returned</Text>
-                <Text style={[styles.heading]}>{isAdmin ? "Edit" : ""}</Text>
-                <Text style={[styles.heading]}>{isAdmin ? "Delete" : ""}</Text>
+                <EllipsisText style={[styles.heading]}>ID</EllipsisText>
+                <EllipsisText style={[styles.heading]}>User</EllipsisText>
+                <EllipsisText style={[styles.heading]}>Book</EllipsisText>
+                <EllipsisText style={[styles.heading]}>Date Requested</EllipsisText>
+                <EllipsisText style={[styles.heading]}>Date Lent</EllipsisText>
+                <EllipsisText style={[styles.heading]}>Date Returned</EllipsisText>
+                <EllipsisText style={[styles.heading]}>{isAdmin ? "Edit" : ""}</EllipsisText>
+                <EllipsisText style={[styles.heading]}>{isAdmin ? "Delete" : ""}</EllipsisText>
             </View>
 
             {/* Logs List */}
@@ -133,17 +135,18 @@ export const RenderLogs = () => {
                 style={{ flex: 1 }}
                 data={filteredLogs}
                 keyExtractor={(item) => item.id}
+                ListEmptyComponent={<EllipsisText style={{justifyContent:"center"}}>No Logs that Apply...</EllipsisText>}
                 renderItem={({ item }) => (
                     <View style={styles.row}>
-                        <Text style={styles.cell}>{item.id}</Text>
-                        <Text style={styles.cell}>{item.userid}</Text>
-                        <Text style={styles.cell}>{item.bookid}</Text>
-                        <Text style={styles.cell}>{item.dateRequested || ''}</Text>
-                        <Text style={styles.cell}>{item.dateLent || ''}</Text>
-                        <Text style={styles.cell}>{item.dateReturned || ''}</Text>
-                        <Text style={styles.cell}>{isAdmin ? 'Edit' : ''}</Text>
+                        <EllipsisText style={styles.cell}>{item.id}</EllipsisText>
+                        <EllipsisText style={styles.cell}>{item.userid}</EllipsisText>
+                        <EllipsisText style={styles.cell}>{item.bookid}</EllipsisText>
+                        <EllipsisText style={styles.cell}>{item.dateRequested || ''}</EllipsisText>
+                        <EllipsisText style={styles.cell}>{item.dateLent || ''}</EllipsisText>
+                        <EllipsisText style={styles.cell}>{item.dateReturned || ''}</EllipsisText>
+                        <EllipsisText style={styles.cell}>{isAdmin ? 'Edit' : ''}</EllipsisText>
                         <TouchableOpacity onPress={() => deleteLogs([item.id])}>
-                            <Text style={styles.cell}>{isAdmin ? 'Delete' : ''}</Text>
+                            <EllipsisText style={styles.cell}>{isAdmin ? 'Delete' : ''}</EllipsisText>
                         </TouchableOpacity>
                     </View>
                 )}

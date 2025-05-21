@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface Book {
   id: string;
   title: string;
-  author: string[];
+  author: string;
   synopsis: string;
   cover: string; // image URI
   publisher: string;
@@ -18,7 +18,7 @@ interface Book {
   acqDate: string;
   isbn: string;
   edition: string;
-  genres: string[];
+  genres: string;
   copies: number;
   available: number;
 }
@@ -145,14 +145,14 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     {
       id: '1',
       title: 'The Wings',
-      author: ['Yi Sang'],
+      author: 'Yi Sang',
       synopsis: 'The Wings is a short novel written by the Korean author Yi Sang in 1936 and published in magazine Jo-Gwang. It is one of the representative works in psychologism or intellectualism literature from the 1930s. It expresses anxiety, self-consciousness, depression and ego destruction.',
-      cover: require('../assets/The Wings.jpg'),
+      cover: "",
       publisher: 'Jimoondang Publishing Company',
       year: '2001',
       acqDate: '2025-05-16',
       isbn: '9788988095508',
-      genres: ['Novel', 'Fiction'],
+      genres: 'Novel',
       copies: 2,
       available: 0,
       edition: "1"
@@ -160,14 +160,14 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     {
       id: '2',
       title: "Goethe's Faust",
-      author: ['Johann Wolfgang von Goethe'],
+      author: 'Johann Wolfgang von Goethe',
       synopsis: 'Goethe’s Faust reworks the late medieval myth of a brilliant scholar so disillusioned he resolves to make a contract with Mephistopheles. The devil will do all he asks on Earth and seeks to grant him a moment in life so glorious that he will wish it to last forever. But if Faust does bid the moment stay, he falls to Mephistopheles and must serve him after death. In this first part of Goethe’s great work, the embittered thinker and Mephistopheles enter into their agreement, and soon Faust is living a rejuvenated life and winning the love of the beautiful Gretchen. But in this compelling tragedy of arrogance, unfulfilled desire, and self-delusion, Faust heads inexorably toward an infernal destruction.',
-      cover: require("../assets/Goethe's Faust.jpg"),
+      cover: "",
       publisher: 'Vintage Books',
       year: '1962',
       acqDate: '2025-05-16',
       isbn: '9780385031141',
-      genres: ['Fiction', 'Plays', 'Poetry', 'German'],
+      genres: 'Fiction',
       copies: 2,
       available: 1,
       edition: "1"

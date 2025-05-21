@@ -8,12 +8,12 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 const LogsScreen: React.FC = () => {
   const { } = useContext(Context);
-  const changeOrientation = async () => {
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT); //Change Landscape
+  //const changeOrientation = async () => {
+   // await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT); //Change Landscape
     //await ScreenOrientation.unlockAsync();
-  }
+  //}
 
-  changeOrientation();
+//  changeOrientation();
   return (
      
     <SafeAreaView style={styles.container}>

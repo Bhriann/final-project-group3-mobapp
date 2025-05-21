@@ -38,7 +38,7 @@ const ProfileScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
         <Text style={styles.headerTitle}>
-          {currentAccount?.username || 'User'}'s Profile
+          {currentAccount || 'User'}'s Profile
         </Text>
         <TouchableOpacity
           onPress={handleLogout}
@@ -106,7 +106,7 @@ const ProfileScreen: React.FC = () => {
                     {book.title}
                   </Text>
                   <Text style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>
-                    By: {book.authors}
+                    By: {book.author}
                   </Text>
                   {book.cover ? (
                     <Image
@@ -165,7 +165,7 @@ const ProfileScreen: React.FC = () => {
                     {book.title}
                   </Text>
                   <Text style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>
-                    By: {book.authors}
+                    By: {book.author}
                   </Text>
                   {book.cover ? (
                     <Image

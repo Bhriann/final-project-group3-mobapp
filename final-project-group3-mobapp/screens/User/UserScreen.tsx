@@ -50,8 +50,8 @@ const UserScreen = () => {
   const sortedBooks = [...books].sort((a, b) => {
     if (sortOption === 'title-asc') return a.title.localeCompare(b.title);
     if (sortOption === 'title-desc') return b.title.localeCompare(a.title);
-    if (sortOption === 'author-asc') return a.authors.localeCompare(b.authors);
-    if (sortOption === 'author-desc') return b.authors.localeCompare(a.authors);
+    if (sortOption === 'author-asc') return a.author.localeCompare(b.author);
+    if (sortOption === 'author-desc') return b.author.localeCompare(a.author);
     return 0;
   });
 
@@ -59,7 +59,7 @@ const UserScreen = () => {
     const searchLower = searchText.toLowerCase();
     return (
       book.title.toLowerCase().includes(searchLower) ||
-      book.authors.toLowerCase().includes(searchLower)
+      book.author.toLowerCase().includes(searchLower)
     );
   });
 
@@ -119,7 +119,7 @@ const UserScreen = () => {
               }}
             >
               <Text style={{ fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>{book.title}</Text>
-              <Text style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>By: {book.authors}</Text>
+              <Text style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>By: {book.author}</Text>
               {book.cover ? (
                 <Image
                   source={{ uri: book.cover }}

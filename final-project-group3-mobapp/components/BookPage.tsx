@@ -11,7 +11,7 @@ export const RenderBooks = () => {
             <View style={[]}>
                 
                 <Image
-                    source={book.cover}
+                    source={require(book.cover)}
                     style={[]}
                     resizeMode="contain"
                 />

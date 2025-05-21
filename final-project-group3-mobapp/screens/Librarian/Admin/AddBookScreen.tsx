@@ -18,7 +18,7 @@ import { Context } from '../../../props and context/context';
 import { useNavigation } from '@react-navigation/native';
 
 const AddBookScreen = () => {
-  const { addBook } = useContext(Context);
+  const { addBook, logs } = useContext(Context);
   const [cover, setCover] = useState('');
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState('');
@@ -28,7 +28,7 @@ const AddBookScreen = () => {
   const [acquisitionDate, setAcquisitionDate] = useState('');
   const [isbn, setIsbn] = useState('');
   const [edition, setEdition] = useState('');
-  const [genres, setGenres] = useState('');
+  const [genres, setGenres] = useState<string>('');
   const [copies, setCopies] = useState('1');
   const navigation = useNavigation<any>();
 
@@ -44,18 +44,19 @@ const AddBookScreen = () => {
     if (!title || !authors || !copies)
       return Alert.alert('Missing Fields', 'Please fill out Title, Authors, and Copies.');
 
+    const newID = parseInt(logs[logs.length-1].id) + 1 
     addBook({
-      id: uuidv4(),
-      title,
-      authors,
-      synopsis,
-      cover,
-      publisher,
-      year,
-      acquisitionDate,
-      isbn,
-      edition,
-      genres,
+      id: newID.toString(),
+      title: title,
+      author: authors,
+      synopsis: synopsis,
+      cover: cover,
+      publisher: publisher,
+      year: year,
+      acqDate: acquisitionDate,
+      isbn: isbn,
+      edition: edition,
+      genres: genres,
       copies: parseInt(copies),
       available: parseInt(copies)
     });

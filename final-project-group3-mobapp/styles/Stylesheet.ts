@@ -182,6 +182,74 @@ cancelButtonText: {
     flex: 1,
     fontSize: 10,
     textAlign: 'left',
-  }
-  
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+
+  signupText: {
+    color: '#007BFF',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
+  logo: {
+    width: 250,
+    height: 250,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 0.25,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    elevation: 5,
+  },
+  warningText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  warningButtons: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+  dismissButton: {
+    backgroundColor: '#ccc',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+  },
+  dismissButtonText: {
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  continueButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 6,
+  },
+  continueButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
