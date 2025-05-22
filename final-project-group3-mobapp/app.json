@@ -3,7 +3,7 @@
     "name": "final-project-group3-mobapp",
     "slug": "final-project-group3-mobapp",
     "version": "1.0.0",
-    "orientation": "default",
+    "orientation": "portrait",
     "plugins": [
       [
         "expo-screen-orientation",

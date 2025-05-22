@@ -1,51 +1,47 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Context } from '../../../props and context/context';
 import { styles } from '../../../styles/Stylesheet';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
-type RootStackParamList = {
-  Login: undefined;
-  Books: undefined;
-  AddBook: undefined;
-  EditBook: { bookId: string };
-};
+//Navigation
+import { NavigationProp } from '../../../props and context/navprops';
+import { useNavigation } from '@react-navigation/native';
 
-type BooksScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Books'>;
-
-const BooksScreen = () => {
+export default function BooksScreen() {
+  const navigation = useNavigation<NavigationProp>();
   const { books, updateBooks } = useContext(Context);
-  const navigation = useNavigation<BooksScreenNavigationProp>();
+
 
   const [showOrientationWarning, setShowOrientationWarning] = useState(true);
-   const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
+  const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
 
   useEffect(() => {
-  const init = async () => {
-    const initialOrientation = await ScreenOrientation.getOrientationAsync();
-    setOrientation(initialOrientation);
+    const init = async () => {
+      const initialOrientation = await ScreenOrientation.getOrientationAsync();
+      setOrientation(initialOrientation);
 
-    // Only show warning if initially in portrait
-    if (
-      initialOrientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
-      initialOrientation === ScreenOrientation.Orientation.PORTRAIT_DOWN
-    ) {
-      setShowOrientationWarning(true);
-    }
+      // Only show warning if initially in portrait
+      if (
+        initialOrientation === ScreenOrientation.Orientation.PORTRAIT_UP ||
+        initialOrientation === ScreenOrientation.Orientation.PORTRAIT_DOWN
+      ) {
+        setShowOrientationWarning(true);
+      }
 
-    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
-      setOrientation(event.orientationInfo.orientation);
-    });
+      const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+        setOrientation(event.orientationInfo.orientation);
+      });
 
-    return () => {
-      subscription.remove();
+      return () => {
+        subscription.remove();
+      };
     };
-  };
 
-  init();
-}, []);
+    init();
+  }, []);
 
 
   const handleLogout = () => {
@@ -71,7 +67,7 @@ const BooksScreen = () => {
     Alert.alert('Options', 'Choose an action', [
       {
         text: 'Edit',
-        onPress: () => navigation.navigate('EditBook', { bookId: id }),
+        //onPress: () => navigation.navigate('EditBook', { bookId: id }),
       },
       {
         text: 'Delete',
@@ -83,20 +79,20 @@ const BooksScreen = () => {
   };
 
   const handleChangeOrientation = async () => {
-  try {
-    setShowOrientationWarning(false);
+    try {
+      setShowOrientationWarning(false);
 
-    // Lock temporarily to landscape left
-    await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+      // Lock temporarily to landscape left
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
 
-    // Unlock after a short delay to allow rotation animation
-    setTimeout(async () => {
-      await ScreenOrientation.unlockAsync();
-    }, 10000);
-  } catch (error) {
-    console.warn('Failed to change orientation', error);
-  }
-};
+      // Unlock after a short delay to allow rotation animation
+      setTimeout(async () => {
+        await ScreenOrientation.unlockAsync();
+      }, 10000);
+    } catch (error) {
+      console.warn('Failed to change orientation', error);
+    }
+  };
 
 
   return (
@@ -142,7 +138,7 @@ const BooksScreen = () => {
           </View>
         ))}
 
-        
+
       </ScrollView>
 
       {/* Orientation Warning Modal */}
@@ -177,5 +173,3 @@ const BooksScreen = () => {
     </SafeAreaView>
   );
 };
-
-export default BooksScreen;

@@ -1,13 +1,11 @@
-import { useState, ReactNode, useEffect, createContext } from "react";
+import { useState, ReactNode, useEffect, createContext, useMemo } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { ImageSourcePropType } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-//import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//Change the content in the interfaces if you need to modify any information inside these objects
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //BOOK TYPES
-interface Book {
+export interface Book {
   id: string;
   title: string;
   author: string;
@@ -19,8 +17,7 @@ interface Book {
   isbn: string;
   edition: string;
   genres: string;
-  copies: number;
-  available: number;
+  copies?: number;
 }
 
 //ACCOUNT TYPE
@@ -32,7 +29,7 @@ interface Accounts {
 }
 
 //LOG TYPE
-interface BorrowingLog {
+export interface BorrowingLog {
   id: string;
   bookid: string;
   userid: string;
@@ -50,30 +47,40 @@ interface Favorites {
 
 //Define Objects here with their types
 type ContextType = {
+  //COMMON DATA
   books: Book[];  //Book Object List
   genres: string[];   //Genre List
+  logs: BorrowingLog[];   //Log Accounts
+
+  //USERS
   admin: Accounts[];  //Admin Accounts
   librarians: Accounts[]; //Librarian Accounts
   users: Accounts[];  //User Accounts
-  logs: BorrowingLog[];   //Log Accounts
-  favorites: Favorites[]; //Favorite Accoutns
-
-  currentAccount: string; //current ID ng User Account to keep track of their favorites and their borrowing logs.
-  setAccount: (id: string) => void;
-  addBook: (book: Book) => void;
-  updateBooks: (books: Book[]) => void;
   setAdmin: React.Dispatch<React.SetStateAction<Accounts[]>>;
   setUsers: React.Dispatch<React.SetStateAction<Accounts[]>>;
   setLibrarians: React.Dispatch<React.SetStateAction<Accounts[]>>;
-  borrowedBooks: string[];
-  favoriteBooks: string[];
-  toggleBorrow: (bookId: string) => void;
+
+  //USER DATA
+  favoriteBooks: Favorites[]; //Favorite Accoutns
   toggleFavorite: (bookId: string) => void;
+  borrowHistory: Book[];
+  favoriteBooksList: Book[];
+
+  //Persistent User Account
+  currentAccount: string; //current ID ng User Account to keep track of their favorites and their borrowing logs.
   setCurrentAccount: (type: string) => void;
-  isAdmin: boolean;
-  deleteLogs: (logs_del: string[]) => void;
-  setSelectedBookId: (bookid: string) => void;
+
+  //Book Data
+  addBook: (book: Book) => void;
+  updateBooks: (books: Book[]) => void;
+
+  // Persistent Book Data
   selectedBook: string;
+  setSelectedBookId: (bookid: string) => void;
+
+  //Logs
+  deleteLogs: (logs_del: string[]) => void;
+  setLogs: React.Dispatch<React.SetStateAction<BorrowingLog[]>>;
 };
 
 interface ContextProviderProps {
@@ -81,40 +88,44 @@ interface ContextProviderProps {
 }
 
 export const Context = createContext<ContextType>({
-  books: [],
-  addBook: () => { },
-  updateBooks: () => { },
-  admin: [],
-  users: [],
-  librarians: [],
-  setAdmin: () => { },
-  setUsers: () => { },
-  setLibrarians: () => { }, // 
-  borrowedBooks: [],
-  favoriteBooks: [],
-  toggleBorrow: () => { },
-  toggleFavorite: () => { },
-  currentAccount: "",
-  setCurrentAccount: () => { },
-  isAdmin: true,
-  deleteLogs: () => { },
-  selectedBook: "",
-  setSelectedBookId: () => { },
+  //COMMON DATA
+  books: [],  //Book Object List
   genres: [],   //Genre List
   logs: [],   //Log Accounts
-  favorites: [], //Favorite Accoutns
-  setAccount: () => { },
 
-  /*logs
+  //USERS
+  admin: [],  //Admin Accounts
+  librarians: [], //Librarian Accounts
+  users: [],  //User Accounts
+  setAdmin: () => { },
+  setUsers: () => { },
+  setLibrarians: () => { },
 
-  logFilterMode: "", 
-  filterMode: () => {},
-  */
+  //USER DATA
+  favoriteBooks: [], //Favorite Accoutns
+  toggleFavorite: () => { },
+  borrowHistory: [],
+  favoriteBooksList: [],
+
+  //Persistent User Account
+  currentAccount: "", //current ID ng User Account to keep track of their favorites and their borrowing logs.
+  setCurrentAccount: () => { },
+
+  //Book Data
+  addBook: () => { },
+  updateBooks: () => { },
+
+  // Persistent Book Data
+  selectedBook: "",
+  setSelectedBookId: () => { },
+
+  //Logs
+  deleteLogs: () => { },
+  setLogs: () => { },
 });
 
 export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
-  const [borrowedBooks, setBorrowedBooks] = useState<string[]>([]);
-  const [favoriteBooks, setFavoriteBooks] = useState<string[]>([]);
+  const [favoriteBooks, setFavoriteBooks] = useState<Favorites[]>([]);
   const [genres, setGenres] = useState<string[]>([
     'Fiction', 'Poetry', 'Plays', 'German'
   ])
@@ -132,14 +143,14 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     { id: "US000001", username: "Peter", email: "peter@example.com", password: "peter123" },   //Initialized One User
   ])
 
+  //Logs Event Handlers
   const [logs, setLogs] = useState<BorrowingLog[]>([
     { id: "1", bookid: "1", userid: "US000001", dateRequested: "2025-05-10", dateLent: "2025-05-11", dateReturned: undefined }
   ])
 
-  const [favorites, setFavorites] = useState<Favorites[]>([
-    { id: "1", userid: "1", bookids: ["1"] }
-  ])
-
+  const deleteLogs = async (logs_del: string[]) => {
+    setLogs(prevLogs => prevLogs.filter(prevLog => !logs_del.includes(prevLog.id)));
+  }
 
   const [books, setBooks] = useState<Book[]>([
     {
@@ -147,14 +158,13 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       title: 'The Wings',
       author: 'Yi Sang',
       synopsis: 'The Wings is a short novel written by the Korean author Yi Sang in 1936 and published in magazine Jo-Gwang. It is one of the representative works in psychologism or intellectualism literature from the 1930s. It expresses anxiety, self-consciousness, depression and ego destruction.',
-      cover: "",
+      cover: encodeURI(require('../assets/The Wings.jpg')),
       publisher: 'Jimoondang Publishing Company',
       year: '2001',
       acqDate: '2025-05-16',
       isbn: '9788988095508',
       genres: 'Novel',
       copies: 2,
-      available: 0,
       edition: "1"
     },
     {
@@ -169,14 +179,13 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       isbn: '9780385031141',
       genres: 'Fiction',
       copies: 2,
-      available: 1,
       edition: "1"
     },
 
   ]);
 
   useEffect(() => {
-    (async () => {
+    const loadState = async () => {
       const storedBooks = await AsyncStorage.getItem('books');
       if (storedBooks) setBooks(JSON.parse(storedBooks));
 
@@ -189,16 +198,17 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       const storedLibrarians = await AsyncStorage.getItem('librarians');
       if (storedLibrarians) setLibrarians(JSON.parse(storedLibrarians));
 
-      const storedBorrowed = await AsyncStorage.getItem('borrowedBooks');
-      if (storedBorrowed) setBorrowedBooks(JSON.parse(storedBorrowed));
-
       const storedFavorites = await AsyncStorage.getItem('favoriteBooks');
-      if (storedFavorites) setFavorites(JSON.parse(storedFavorites));
-    })();
-  }, []);
+      if (storedFavorites) setFavoriteBooks(JSON.parse(storedFavorites));
 
-  
-   const [isAdmin, setisAdmin] = useState<boolean>(true);
+      const storedLogs = await AsyncStorage.getItem('logs');
+      if (storedLogs) setLogs(JSON.parse(storedLogs));
+    };
+
+    loadState();
+  }, [logs]);
+
+  const [isAdmin, setisAdmin] = useState<boolean>(true);
   const addBook = async (book: Book) => {
     const updated = [...books, book];
     setBooks(updated);
@@ -210,33 +220,68 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     await AsyncStorage.setItem('books', JSON.stringify(updatedBooks));
   };
 
-  const toggleBorrow = async (bookId: string) => {
-    setBorrowedBooks(prev => {
-      const newBorrowed = prev.includes(bookId)
-        ? prev.filter(id => id !== bookId)
-        : [...prev, bookId];
-      AsyncStorage.setItem('borrowedBooks', JSON.stringify(newBorrowed));
-      return newBorrowed;
-    });
+  const saveFavorites = async (updatedFavorites: Favorites[]) => {
+    await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    setFavoriteBooks(updatedFavorites);
   };
 
   const toggleFavorite = async (bookId: string) => {
-    setFavoriteBooks(prev => {
-      const newFavorites = prev.includes(bookId)
-        ? prev.filter(id => id !== bookId)
-        : [...prev, bookId];
-      AsyncStorage.setItem('favoriteBooks', JSON.stringify(newFavorites));
-      return newFavorites;
+
+    setFavoriteBooks((prevFavorites) => {
+      const userFavorites = prevFavorites.find(fav => fav.userid === currentAccount);
+console.log("toggled")
+      if (!userFavorites) {
+        // User doesn't have any favorites yet — create new entry
+        const newFavorites: Favorites = {
+          id: Date.now().toString(), // simple ID generation
+          userid: currentAccount,
+          bookids: [bookId],
+        };
+
+        const updated = [...prevFavorites, newFavorites];
+        saveFavorites(updated);
+        return updated;
+      }
+
+      // User already has favorites — update their list
+      const updatedBookIds = userFavorites.bookids.includes(bookId)
+        ? userFavorites.bookids.filter(id => id !== bookId)
+        : [...userFavorites.bookids, bookId];
+
+      const updatedFavorites = prevFavorites.map(fav =>
+        fav.userid === currentAccount
+          ? { ...fav, bookids: updatedBookIds }
+          : fav
+      );
+
+      saveFavorites(updatedFavorites);
+      return updatedFavorites;
     });
-  }; const [selectedBook, setSelectedBook] = useState<string>("");
-  const [currentAccount, setCurrentAccount] = useState<string>("")
+  };
 
-  const setAccount = (type: string) => setCurrentAccount(type);    //set if user is an admin, libarian or user
-const setSelectedBookId = (bookid: string) => {setSelectedBook(bookid)};
 
- const deleteLogs = (logs_del:string[]) => {
-       setLogs(prevLogs => prevLogs.filter(prevLog => !logs_del.includes(prevLog.id)));
-    }
+
+  //Non-Persistent Handlers
+  const [currentAccount, setCurrentAccount] = useState<string>("") //Set the id of the user for borrowing, favorites, and admin-librarian checks
+  const [selectedBook, setSelectedBookId] = useState<string>(""); //Set the current Book to be used by the RenderBookPage Component.
+
+  const borrowHistory = useMemo(() => {
+    if (!logs || !books || !currentAccount) return [];
+
+    const userLogs = logs.filter(log => log.userid === currentAccount);
+    const userBookIds = userLogs.map(log => log.bookid);
+
+    return books.filter(book => userBookIds.includes(book.id));
+  }, [logs, books, currentAccount]);
+
+  const favoriteBooksList = useMemo(() => {
+    if (!favoriteBooks || !books || !currentAccount) return [];
+
+    const userFavorites = favoriteBooks.find(fav => fav.userid === currentAccount)?.bookids || [];
+
+    return books.filter(book => userFavorites.includes(book.id));
+  }, [favoriteBooks, books, currentAccount]);
+
   /* Fonts paki-ignore muna
  const [fontsLoaded] = useFonts({
    Grotesk_Bold: require("../assets/ClashGrotesk-Bold.otf"),
@@ -251,29 +296,40 @@ const setSelectedBookId = (bookid: string) => {setSelectedBook(bookid)};
   return (
     //Call The UseStates here
     <Context.Provider value={{
+      //COMMON DATA
       books,
-      addBook,
-      updateBooks,
-      admin,
-      users,
-      librarians,
-      setAdmin,
-      borrowedBooks,
-      favorites,
-      toggleBorrow,
-      toggleFavorite,
-      currentAccount,
-      setCurrentAccount,
-favoriteBooks,
       genres,
+      logs,
+
+      //USERS
+      admin,
+      librarians,
+      users,
+      setAdmin,
       setUsers,
       setLibrarians,
-      logs,
-      setAccount,
-      isAdmin,
-      deleteLogs,
+
+      //USER DATA
+      favoriteBooks,
+      toggleFavorite,
+      borrowHistory,
+      favoriteBooksList,
+
+      //Persistent User Account
+      currentAccount,
+      setCurrentAccount,
+
+      //Book Data
+      addBook,
+      updateBooks,
+
+      // Persistent Book Data
+      selectedBook,
       setSelectedBookId,
-      selectedBook
+
+      //Logs
+      deleteLogs,
+      setLogs,
     }}>
       {children}
     </Context.Provider>

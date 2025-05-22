@@ -14,10 +14,14 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
-import { Context } from '../../../props and context/context';
+import { NavigationProp } from '../../../props and context/navprops';
 import { useNavigation } from '@react-navigation/native';
+import { Context } from '../../../props and context/context';
 
-const AddBookScreen = () => {
+
+export default function AddBookScreen() {
+  const navigation = useNavigation<NavigationProp>();
+
   const { addBook, logs } = useContext(Context);
   const [cover, setCover] = useState('');
   const [title, setTitle] = useState('');
@@ -30,7 +34,7 @@ const AddBookScreen = () => {
   const [edition, setEdition] = useState('');
   const [genres, setGenres] = useState<string>('');
   const [copies, setCopies] = useState('1');
-  const navigation = useNavigation<any>();
+
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -58,7 +62,6 @@ const AddBookScreen = () => {
       edition: edition,
       genres: genres,
       copies: parseInt(copies),
-      available: parseInt(copies)
     });
 
     navigation.goBack();
@@ -160,4 +163,3 @@ const inputStyle = {
   paddingVertical: 4
 };
 
-export default AddBookScreen;

@@ -1,45 +1,30 @@
 import React, { useContext, useState } from 'react';
 import { Context } from '../../props and context/context';
-import {
-  SafeAreaView,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Pressable,
-} from 'react-native';
+import { SafeAreaView, Text, View, ScrollView, Image, TouchableOpacity, TextInput, Modal, Pressable, } from 'react-native';
 import { styles } from '../../styles/Stylesheet';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { BorrowingLog } from '../../props and context/context';
+import dayjs from 'dayjs';
 
-type RootStackParamList = {
-  Login: undefined;
-  User: undefined;
-};
+//Navigation
+import { useNavigation } from '@react-navigation/native';
+//import { UserTabsScreenProps } from '../../props and context/navprops';
+//import { NativeStackScreenProps } from '@react-navigation/native-stack';
+//import { RootStackParamList } from '../../props and context/navprops';
+//type Props = UserTabsScreenProps<'UserScreen'> & NativeStackScreenProps<RootStackParamList, 'Login'>;
+//import { AppStackScreenProps } from '../../props and context/navprops';
+//type Props = AppStackScreenProps<'User'>;
+import { NavigationProp } from '../../props and context/navprops';
 
-type UserScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'User'>;
-
-const UserScreen = () => {
-  const { 
-    books, 
-    borrowedBooks, 
-    favoriteBooks, 
-    toggleBorrow, 
-    toggleFavorite,
-    currentAccount 
-  } = useContext(Context);
-  
-  const navigation = useNavigation<UserScreenNavigationProp>();
+export default function UserScreen () {
+ const navigation = useNavigation<NavigationProp>();
+  const { logs, books, toggleFavorite, currentAccount, setLogs, favoriteBooksList, borrowHistory } = useContext(Context);
   const [searchText, setSearchText] = useState('');
   const [sortOption, setSortOption] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleLogout = () => {
-    navigation.replace('Login');
+    navigation.navigate('Login');
   };
 
   const applySort = (option: string) => {
@@ -62,6 +47,18 @@ const UserScreen = () => {
       book.author.toLowerCase().includes(searchLower)
     );
   });
+
+  const addBorrowLog = (bookId: string) => {
+    const newLog: BorrowingLog = {
+      id: (logs.length + 1).toString(),
+      bookid: bookId,
+      userid: currentAccount,
+      dateRequested: dayjs().toString(),
+      dateLent: undefined,
+      dateReturned: undefined,
+    };
+    setLogs(prev => [...prev, newLog]);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,9 +96,8 @@ const UserScreen = () => {
       {/* Book List */}
       <ScrollView contentContainerStyle={{ padding: 10 }}>
         {filteredBooks.map(book => {
-          const isBorrowed = borrowedBooks.includes(book.id);
-          const isFavorited = favoriteBooks.includes(book.id);
-          
+          const isBorrowed = borrowHistory.some(b => b.id === book.id);
+          const isFavorited = favoriteBooksList.some(b => b.id === book.id);
           return (
             <View
               key={book.id}
@@ -128,11 +124,11 @@ const UserScreen = () => {
               ) : (
                 <Text style={{ color: '#aaa' }}>[ No Cover Image ]</Text>
               )}
-              
+
               {/* Borrow & Favorite Buttons */}
               <View style={{ flexDirection: 'row', marginTop: 10 }}>
                 <TouchableOpacity
-                  onPress={() => toggleBorrow(book.id)}
+                  onPress={() => addBorrowLog(book.id)}
                   style={{
                     backgroundColor: isBorrowed ? '#d9534f' : '#4CAF50',
                     paddingVertical: 8,
@@ -209,5 +205,3 @@ const UserScreen = () => {
     </SafeAreaView>
   );
 };
-
-export default UserScreen;

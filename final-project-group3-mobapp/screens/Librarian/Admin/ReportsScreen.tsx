@@ -13,10 +13,15 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import 'dayjs/locale/en';
 
+//Navigation
+import { NavigationProp } from '../../../props and context/navprops';
+import { useNavigation } from '@react-navigation/native';
+
 dayjs.locale('en');
 dayjs.extend(isBetween);
 
-const ReportsScreen: React.FC = () => {
+export default function ReportsScreen() {
+   const navigation = useNavigation<NavigationProp>();
   const { books, logs } = useContext(Context);
 
   // State for filtered data
@@ -167,4 +172,3 @@ const ReportsScreen: React.FC = () => {
   );
 };
 
-export default ReportsScreen;

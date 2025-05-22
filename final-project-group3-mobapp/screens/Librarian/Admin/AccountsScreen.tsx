@@ -6,7 +6,13 @@ import { Context } from '../../../props and context/context';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-const AccountsScreen: React.FC = () => {
+//Navigation
+import { NavigationProp } from '../../../props and context/navprops';
+import { useNavigation } from '@react-navigation/native';
+
+export default function AccountsScreen() {
+
+  const navigation = useNavigation<NavigationProp>();
   const { admin, users, librarians, setUsers, setLibrarians } = useContext(Context);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -222,4 +228,3 @@ const AccountsScreen: React.FC = () => {
   );
 };
 
-export default AccountsScreen;

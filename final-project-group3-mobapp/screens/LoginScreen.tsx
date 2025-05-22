@@ -1,51 +1,47 @@
 import React, { useContext, useState } from 'react';
-import {
-  SafeAreaView,
-  Text,
-  View,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-  TextInput,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
+import { SafeAreaView, Text, View, Alert, TouchableOpacity, TextInput, Image, KeyboardAvoidingView, Platform, ScrollView, } from 'react-native';
+
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
+// Context & Styles
 import { Context } from '../props and context/context';
 import { styles } from '../styles/Stylesheet';
 
-type Props = {
-  navigation: any;
-};
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const { admin, users, librarians, setAccount } = useContext(Context);
+// Screen Orientation
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '../props and context/navprops';
+
+export default function LoginScreen() {
+
+ const navigation = useNavigation<NavigationProp>();
+  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+
+  const { admin, users, librarians, setCurrentAccount } = useContext(Context);
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string().min(4, 'Too short').required('Password is required'),
+    password: Yup.string().required('Password is required'),
   });
 
   const handleLogin = (values: { email: string; password: string }) => {
     const { email, password } = values;
+
     const foundAdmin = admin.find((acc) => acc.email === email && acc.password === password);
-    const foundLibrarian = librarians.find(
-      (acc) => acc.email === email && acc.password === password
-    );
+    const foundLibrarian = librarians.find((acc) => acc.email === email && acc.password === password);
     const foundUser = users.find((acc) => acc.email === email && acc.password === password);
 
     if (foundAdmin) {
-      setAccount(foundAdmin.id);
+      setCurrentAccount(foundAdmin.id);
       navigation.replace('Admin');
     } else if (foundLibrarian) {
-      setAccount(foundLibrarian.id);
+      setCurrentAccount(foundLibrarian.id);
       navigation.replace('Librarian');
     } else if (foundUser) {
-      setAccount(foundUser.id);
+      setCurrentAccount(foundUser.id);
       navigation.replace('User');
     } else {
       Alert.alert('Login Failed', 'Invalid email or password');
@@ -55,18 +51,21 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' for Android
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={80}
         style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps="always"
+          bounces={false}
         >
           <Image
             source={require('../images/LibriLogo.png')}
             style={styles.logo}
+            resizeMode="contain"
           />
-          <Text style={styles.title}>Bookman Login</Text>
+          <Text style={styles.title}>Login</Text>
 
           <Formik
             initialValues={{ email: '', password: '' }}
@@ -87,7 +86,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.errorText}>{errors.email}</Text>
                 )}
 
-                {/* Password Field */}
                 <View style={styles.passwordInputContainer}>
                   <TextInput
                     placeholder="Password"
@@ -97,20 +95,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                     onBlur={handleBlur('password')}
                     value={values.password}
                   />
-                  <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
-                    style={styles.showButton}
-                  >
-                    <Text style={styles.showButtonText}>
-                      {showPassword ? 'Hide' : 'Show'}
-                    </Text>
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    <Text style={styles.showButtonText}>{showPassword ? 'Hide' : 'Show'}</Text>
                   </TouchableOpacity>
                 </View>
                 {errors.password && touched.password && (
                   <Text style={styles.errorText}>{errors.password}</Text>
                 )}
 
-                {/* Submit Button */}
                 <TouchableOpacity
                   style={[
                     styles.buttonContainer,
@@ -134,4 +126,3 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default LoginScreen;

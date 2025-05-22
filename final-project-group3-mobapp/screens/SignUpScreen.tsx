@@ -1,20 +1,20 @@
 import React, { useContext, useState } from 'react';
 import { SafeAreaView, Text, TextInput, TouchableOpacity, Alert, View } from 'react-native';
-import { styles } from '../styles/Stylesheet';
-import { Context } from '../props and context/context';
-import { NavigationProp } from "@react-navigation/native";
 
+//FORM Imports
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
+import { Context } from '../props and context/context';
+import { styles } from '../styles/Stylesheet';
 
+//Navigation
+import { NavigationProp } from '../props and context/navprops';
+import { useNavigation } from '@react-navigation/native';
 
-export interface Props {
-    navigation: NavigationProp<any>;
-}
-
-const SignUpScreen: React.FC<Props> = ({ navigation }) => {
-  const { users, setUsers, setAccount } = useContext(Context);
+export default function SignUp() {
+const navigation = useNavigation<NavigationProp>();
+  const { users, setUsers, } = useContext(Context);
   const [showPassword, setShowPassword] = useState(false);
 
   const SignUpSchema = Yup.object().shape({
@@ -51,15 +51,14 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   password
 };
 
-setUsers([...users, newUser]);   
-setAccount(newUser.id);          
-navigation.navigate('User');     
+setUsers([...users, newUser]);          
+navigation.goBack();     
 };
 
 
   return (
     <SafeAreaView style={styles.LogInContainer}>
-      <Text style={styles.title}>Bookman Sign Up</Text>
+      <Text style={styles.title}>Libri Sign Up</Text>
 
       <Formik
         initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
@@ -129,7 +128,7 @@ navigation.navigate('User');
             </TouchableOpacity>
 
             {/* Navigate to Log In screen */}
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
               <Text style={{ color: '#007BFF', marginTop: 20, textAlign: 'center' }}>
                 Already have an account? Log In
               </Text>
@@ -141,4 +140,3 @@ navigation.navigate('User');
   );
 };
 
-export default SignUpScreen;

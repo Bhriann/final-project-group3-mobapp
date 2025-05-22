@@ -252,4 +252,29 @@ cancelButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },
+  profileHeader: {
+  padding: 20,
+  alignItems: 'center',
+},
+avatar: {
+  width: 100,
+  height: 100,
+  borderRadius: 50,
+  marginBottom: 10,
+},
+userName: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: '#333',
+},
+userEmail: {
+  fontSize: 14,
+  color: '#777',
+},
+sectionTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  marginBottom: 10,
+  marginLeft: 5,
+},
 });

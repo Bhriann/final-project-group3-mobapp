@@ -5,8 +5,12 @@ import { styles } from '../../../styles/Stylesheet';
 import { Context } from '../../../props and context/context';
 import { RenderLogs } from '../../../components/RenderLogs';
 import * as ScreenOrientation from 'expo-screen-orientation';
+//Navigation
+import { NavigationProp } from '../../../props and context/navprops';
+import { useNavigation } from '@react-navigation/native';
+export default function LogsScreen(){
 
-const LogsScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
   const { } = useContext(Context);
   //const changeOrientation = async () => {
    // await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT); //Change Landscape
@@ -21,5 +25,3 @@ const LogsScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-export default LogsScreen;
