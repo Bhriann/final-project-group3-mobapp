@@ -5,6 +5,9 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  PermissionsAndroid, // added import
+  Platform,          // added import
 } from 'react-native';
 import { styles } from '../../../styles/Stylesheet';
 import { Context } from '../../../props and context/context';
@@ -13,19 +16,21 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import 'dayjs/locale/en';
 
-//Navigation
+// Navigation
 import { NavigationProp } from '../../../props and context/navprops';
 import { useNavigation } from '@react-navigation/native';
+
+// PDF generator
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 dayjs.locale('en');
 dayjs.extend(isBetween);
 
 export default function ReportsScreen() {
-
   const navigation = useNavigation<NavigationProp>();
-  const { books, logs, setCurrentAccount} = useContext(Context);
+  const { books, logs } = useContext(Context);
 
-  // State for filtered data
+  // Filtered logs state
   const [filteredLogs, setFilteredLogs] = useState(logs);
 
   // Stats state
@@ -40,14 +45,14 @@ export default function ReportsScreen() {
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
-  // Handle date selection
+  // Date picker confirm handlers
   const handleConfirmStartDate = (date: Date) => {
-    setStartDate(date);
+    setStartDate(new Date(date)); 
     setShowStartDatePicker(false);
   };
 
   const handleConfirmEndDate = (date: Date) => {
-    setEndDate(date);
+    setEndDate(new Date(date)); 
     setShowEndDatePicker(false);
   };
   //LOGOUT
@@ -76,119 +81,174 @@ export default function ReportsScreen() {
     setFilteredLogs(filtered);
   }, [logs, startDate, endDate]);
 
-  // Update stats when filteredLogs or books change
+  // Update statistics
   useEffect(() => {
     setTotalBooks(books.length);
 
-    // Count borrowed and returned
-    const borrowed = filteredLogs.filter(
-      (item) => item.dateLent && !item.dateReturned
-    ).length;
-    const returned = filteredLogs.filter(
-      (item) => item.dateReturned
-    ).length;
+    const borrowed = filteredLogs.filter(item => item.dateLent && !item.dateReturned).length;
+    const returned = filteredLogs.filter(item => item.dateReturned).length;
 
     setBorrowedBooks(borrowed);
     setReturnedBooks(returned);
 
-    // Example: count books added in date range (if you have a `dateAdded` field)
     const addedInPeriod = books.filter((book) =>
       dayjs(book.acqDate).isBetween(startDate, endDate, null, '[]')
     ).length;
     setBooksAdded(addedInPeriod);
-  }, [filteredLogs, books]);
+  }, [filteredLogs, books, startDate, endDate]);
+
+  // Quick date filter presets
+  const setQuickRange = (range: 'week' | 'month' | 'year' | 'all') => {
+    const now = dayjs();
+    switch (range) {
+      case 'week':
+        setStartDate(now.subtract(1, 'week').toDate());
+        setEndDate(now.toDate());
+        break;
+      case 'month':
+        setStartDate(now.subtract(1, 'month').toDate());
+        setEndDate(now.toDate());
+        break;
+      case 'year':
+        setStartDate(now.subtract(1, 'year').toDate());
+        setEndDate(now.toDate());
+        break;
+      case 'all':
+        setStartDate(new Date(2000, 0, 1));
+        setEndDate(now.toDate());
+        break;
+    }
+  };
+
+  // **ADDED**: Request storage permission on Android
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission',
+            message: 'App needs access to your storage to save PDFs',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn('Permission request error:', err);
+        return false;
+      }
+    }
+    return true; // iOS doesn't require permission
+  };
+
+  // Generate PDF function
+  const generatePDF = async () => {
+    // **ADDED**: Check permission first
+    const hasPermission = await requestStoragePermission();
+    if (!hasPermission) {
+      Alert.alert('Permission denied', 'Cannot generate PDF without storage permission.');
+      return;
+    }
+
+    const fromDate = dayjs(startDate).format('YYYY-MM-DD');
+    const toDate = dayjs(endDate).format('YYYY-MM-DD');
+
+    const htmlContent = `
+      <h1 style="text-align:center;">Library Report</h1>
+      <p><strong>Date Range:</strong> ${fromDate} to ${toDate}</p>
+      <p><strong>Total Books:</strong> ${totalBooks}</p>
+      <p><strong>Borrowed:</strong> ${borrowedBooks}</p>
+      <p><strong>Returned:</strong> ${returnedBooks}</p>
+      <p><strong>Books Added:</strong> ${booksAdded}</p>
+    `;
+
+    try {
+      const options = {
+        html: htmlContent,
+        fileName: `Library_Report_${fromDate}_to_${toDate}`,
+        directory: 'Documents',
+      };
+
+      const file = await RNHTMLtoPDF.convert(options);
+
+      Alert.alert('PDF Generated', `PDF saved to:\n${file.filePath}`);
+    } catch (error) {
+      // **ADDED**: Log detailed error for debugging
+      console.error('PDF generation error:', error);
+      Alert.alert('PDF Error', 'Something went wrong while generating the PDF.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-        <Text style={styles.headerTitle}>REPORTS</Text>
-        <TouchableOpacity
-          onPress={() => { handleLogout }}
-          style={{
-            backgroundColor: 'red',
-            paddingVertical: 6,
-            paddingHorizontal: 12,
-            borderRadius: 5,
-          }}
-        >
-          <Text style={{ color: 'white', fontWeight: 'bold' }}>Logout</Text>
-        </TouchableOpacity>
-
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Reports</Text>
       </View>
 
+      <ScrollView contentContainerStyle={styles.reportContainer}>
+        {/* Quick Filter Header Row */}
+        <View style={styles.quickFiltersRow}>
+          <TouchableOpacity onPress={() => setQuickRange('week')} style={styles.quickFilterButton}>
+            <Text style={styles.quickFilterText}>Past Week</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setQuickRange('month')} style={styles.quickFilterButton}>
+            <Text style={styles.quickFilterText}>Past Month</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setQuickRange('year')} style={styles.quickFilterButton}>
+            <Text style={styles.quickFilterText}>Past Year</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setQuickRange('all')} style={styles.quickFilterButton}>
+            <Text style={styles.quickFilterText}>All Time</Text>
+          </TouchableOpacity>
+        </View>
 
-
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
         {/* Date Range Picker Buttons */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={styles.dateRangeContainer}>
           <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
-            <Text>From: {dayjs(startDate).format('YYYY-MM-DD')}</Text>
+            <Text style={styles.dateText}>From: {dayjs(startDate).format('YYYY-MM-DD')}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
-            <Text>To: {dayjs(endDate).format('YYYY-MM-DD')}</Text>
+            <Text style={styles.dateText}>To: {dayjs(endDate).format('YYYY-MM-DD')}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Stats */}
-        <View style={{ marginTop: 20 }}>
-          <Text>Total Books: {totalBooks}</Text>
-          <Text>Borrowed: {borrowedBooks}</Text>
-          <Text>Returned: {returnedBooks}</Text>
-          <Text>Books Added: {booksAdded}</Text>
+        {/* Statistics */}
+        <View style={styles.statsContainer}>
+          <Text style={styles.statsText}>Total Books: {totalBooks}</Text>
+          <Text style={styles.statsText}>Borrowed: {borrowedBooks}</Text>
+          <Text style={styles.statsText}>Returned: {returnedBooks}</Text>
+          <Text style={styles.statsText}>Books Added: {booksAdded}</Text>
         </View>
 
-        {/* Quick Range Filters */}
-        <View style={{ marginTop: 30 }}>
-          <Text>Quick Filters:</Text>
-          <TouchableOpacity
-            onPress={() =>
-              setStartDate(dayjs().subtract(1, 'week').toDate())
-            }
-          >
-            <Text>Past Week</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              setStartDate(dayjs().subtract(1, 'month').toDate())
-            }
-          >
-            <Text>Past Month</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              setStartDate(dayjs().subtract(1, 'year').toDate())
-            }
-          >
-            <Text>Past Year</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              setStartDate(new Date(2000, 0, 1)) // Very early date
-            }
-          >
-            <Text>All Time</Text>
+        {/* Generate PDF Button */}
+        <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <TouchableOpacity onPress={generatePDF} style={styles.quickFilterButton}>
+            <Text style={styles.quickFilterText}>Generate PDF</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Date Pickers */}
+      {/* Start Date Picker */}
       <DateTimePickerModal
         isVisible={showStartDatePicker}
         mode="date"
         onConfirm={handleConfirmStartDate}
         onCancel={() => setShowStartDatePicker(false)}
-        maximumDate={endDate ? new Date(endDate) : dayjs().toDate()}
+        maximumDate={endDate || dayjs().toDate()}
       />
 
+      {/* End Date Picker */}
       <DateTimePickerModal
         isVisible={showEndDatePicker}
         mode="date"
         onConfirm={handleConfirmEndDate}
         onCancel={() => setShowEndDatePicker(false)}
-        minimumDate={startDate ? new Date(startDate) : undefined}
+        minimumDate={startDate}
         maximumDate={dayjs().toDate()}
       />
     </SafeAreaView>
   );
-};
-
+}
