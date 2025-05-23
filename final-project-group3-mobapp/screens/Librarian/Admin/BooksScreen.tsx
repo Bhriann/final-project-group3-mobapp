@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, FlatList, Image, Alert, Modal, useWindowDimensions } from 'react-native';
 
 import { Context } from '../../../props and context/context';
@@ -19,6 +19,18 @@ export default function BooksScreen() {
 
   const [showOrientationWarning, setShowOrientationWarning] = useState(true);
   const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
+
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  const sortedBooks = useMemo(() => {
+    return [...books].sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.title.localeCompare(b.title);
+      } else {
+        return b.title.localeCompare(a.title);
+      }
+    });
+  }, [books, sortOrder]);
 
   //Change Orientation
   useEffect(() => {
@@ -87,7 +99,12 @@ export default function BooksScreen() {
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.title}>Librarian Books</Text>
-
+        <TouchableOpacity
+          onPress={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+          style={{ padding: 10, backgroundColor: '#f0f0f0', borderRadius: 8, alignSelf: 'flex-end', marginBottom: 10 }}
+        >
+          <Text>{sortOrder === 'asc' ? 'A→Z' : 'Z→A'}</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => { setSelectedBookId(""); navigation.navigate('AddBook') }}
           style={[styles.buttonContainer, { margin: 20, alignSelf: 'center' }]}
@@ -114,10 +131,10 @@ export default function BooksScreen() {
       </View>
 
       <FlatList
-        data={books}
+        data={sortedBooks}
         style={{ flex: 1 }}
         keyExtractor={(item) => item.id}
-        extraData={books}
+        extraData={sortedBooks}
         ListEmptyComponent={<Text style={{ textAlign: "center", padding: 20 }}>No Logs Match...</Text>}
         renderItem={({ item }) => (
           <View style={styles.row}>

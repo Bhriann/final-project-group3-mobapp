@@ -110,7 +110,7 @@ export const RenderLogs = () => {
      console.log('Edit')
     }
     return (
-        <View style={[styles.container, { paddingLeft: isLandscape ? 80 : 40 }]}>
+        <View style={[styles.container, { paddingRight: 20, paddingLeft: isLandscape ? 60 : 0 }]}>
             {/* Buttons */}
             <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <TouchableOpacity onPress={() => handleSetFilterType("all")}>
@@ -155,8 +155,8 @@ export const RenderLogs = () => {
                 <EllipsisText style={[styles.heading]}>Date Requested</EllipsisText>
                 <EllipsisText style={[styles.heading]}>Date Lent</EllipsisText>
                 <EllipsisText style={[styles.heading]}>Date Returned</EllipsisText>
-                <EllipsisText style={[styles.heading]}>{isAdmin ? "Edit" : ""}</EllipsisText>
-                <EllipsisText style={[styles.heading]}>{isAdmin ? "Delete" : ""}</EllipsisText>
+                <Text style={[styles.heading]}></Text>
+                <Text style={[styles.heading]}></Text>
             </View>
 
             {/* Logs List */}
@@ -210,5 +210,7 @@ export const RenderLogs = () => {
                 maximumDate={dayjs().toDate()}
             />
         </View>
+
+        
     );
 };
