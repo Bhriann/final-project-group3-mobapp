@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import ProfileScreen from "../screens/User/ProfileScreen";
 
 export const styles = StyleSheet.create({
 
@@ -7,7 +8,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    backgroundColor: '#e0e0e0',
   },
   headerTitle: {
     fontSize: 20,
@@ -19,97 +19,100 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-    LogInContainer: {
-      flex: 1,
-      padding: 20,
-      justifyContent: 'center',
-      backgroundColor: '#f5f5f5',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 30,
-      textAlign: 'center',
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: '#ccc',
-      padding: 10,
-      marginBottom: 15,
-      borderRadius: 5,
-      width: '90%',
-      maxWidth: 400,
-      alignSelf: 'center',
-      backgroundColor: '#fff',
-    },
-    buttonContainer: {
-      backgroundColor: '#007BFF',
-      paddingVertical: 15,
-      borderRadius: 5,
-      width: '90%',
-      maxWidth: 400,
-      alignSelf: 'center',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    passwordInputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 5,
-      marginBottom: 15,
-      backgroundColor: '#fff',
-      width: '90%',
-      maxWidth: 400,
-      alignSelf: 'center',
-    },
+  title: {
+    fontFamily: "Grotesk_Medium",
+    fontSize: 30,
+    marginTop: 20,
 
-    passwordInput: {
-      flex: 1,
-      padding: 10,
-    },
+  },
+  profileTitle: {
+    fontFamily: "Grotesk_Medium",
+    fontSize: 30,
+    marginBottom: 5,
+  },
+  infotitle: {
+    fontFamily: "Grotesk_Medium",
+    fontSize: 30,
+  },
+  infoyear: {
+    fontFamily: "Grotesk_Light",
+    fontSize: 12,
+  },
+  mediumfont: {
+    fontFamily: "Grotesk_Medium",
+  },
+  input: {
 
-    showButton: {
-      paddingHorizontal: 10,
-      paddingVertical: 10,
-    },
+    paddingLeft: 10,
+    marginTop: 10,
+    width: "100%",
+    height: 40,
+    borderRadius: 30,
+    alignSelf: 'center',
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
 
-    showButtonText: {
-      color: '#007BFF',
-      fontWeight: 'bold',
-    },
+  },
 
-      sectionHeader: {
+  inputText: {
+    flex: 1,
+    fontSize: 16,
+    padding: 2,
+    fontFamily: "Grotesk_Medium"
+  },
+
+  buttonContainer: {
+    backgroundColor: '#2A53A0',
+    marginVertical: 20,
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 5,
+    width: '90%',
+    maxWidth: 400,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  showButtonText: {
+    color: '#2A53A0',
+    fontWeight: 'bold',
+    paddingRight: 10,
+    fontFamily: "Grotesk_Medium"
+  },
+
+  sectionHeader: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
     alignSelf: 'center',
   },
   listItem: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: 12,
-  borderWidth: 1,
-  borderColor: '#ccc',
-  borderRadius: 5,
-  marginBottom: 10,
-  backgroundColor: '#fff',
-  width: '90%',
-  alignSelf: 'center',
-  flexWrap: 'wrap', 
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+    width: '90%',
+    alignSelf: 'center',
+    flexWrap: 'wrap',
   },
 
   listItemText: {
-  fontSize: 14,
-  flexShrink: 1,
-  flexWrap: 'wrap',
+    fontSize: 14,
+    flexShrink: 1,
+    flexWrap: 'wrap',
   },
 
   deleteButton: {
@@ -131,36 +134,36 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   roleButton: {
-  flex: 1,
-  padding: 12,
-  borderRadius: 5,
-  backgroundColor: '#e0e0e0',
-  marginHorizontal: 5,
-  alignItems: 'center',
-},
+    flex: 1,
+    padding: 12,
+    borderRadius: 5,
+    backgroundColor: '#e0e0e0',
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
 
-roleButtonSelected: {
-  backgroundColor: '#007BFF',
-  borderWidth: 1,
-  borderColor: '#005FCC',
-},
+  roleButtonSelected: {
+    backgroundColor: '#007BFF',
+    borderWidth: 1,
+    borderColor: '#005FCC',
+  },
 
-cancelButton: {
-  padding: 12,
-  borderRadius: 5,
-  backgroundColor: '#ccc',
-  alignItems: 'center',
-  width: '48%',
-},
+  cancelButton: {
+    padding: 12,
+    borderRadius: 5,
+    backgroundColor: '#ccc',
+    alignItems: 'center',
+    width: '48%',
+  },
 
-cancelButtonText: {
-  fontSize: 16,
-  fontWeight: 'bold',
-  color: '#333',
-},
-    table_header: {
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  table_header: {
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     padding: 10,
   },
 
@@ -171,7 +174,7 @@ cancelButtonText: {
   },
   row: {
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     padding: 10,
     marginVertical: 1,
     backgroundColor: '#fff',
@@ -186,24 +189,47 @@ cancelButtonText: {
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: 40,
+  },
+  scrollInfo: {
+    justifyContent: 'center',
+    padding: 40,
+  },
+  scrollProfile: {
+    justifyContent: 'center',
+    paddingHorizontal: 25,
+  },
+  emptyProfile: {
+    fontFamily:"Grotesk_Regular",
+    paddingBottom: 20
+  },
+   profileSection: {
+    paddingBottom: 30
   },
 
   signupText: {
-    color: '#007BFF',
+    color: '#2F5B94',
     marginTop: 20,
     textAlign: 'center',
+    fontFamily: "Grotesk_Light"
   },
   errorText: {
     color: 'red',
-    marginBottom: 10,
+    backgroundColor: '#EAB2A5',
+    borderRadius: 10,
+    marginVertical: 10,
+    marginLeft: 10,
+    borderColor: 'red',
+    borderWidth: 1,
+    padding: 6,
+    fontFamily: "Grotesk_Light",
+    fontSize: 12
   },
   logo: {
-    width: 250,
-    height: 250,
+    width: 150,
+    height: 150,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginBottom: 0.25,
   },
 
   modalOverlay: {
@@ -253,28 +279,138 @@ cancelButtonText: {
     fontWeight: 'bold',
   },
   profileHeader: {
-  padding: 20,
-  alignItems: 'center',
-},
-avatar: {
-  width: 100,
-  height: 100,
-  borderRadius: 50,
-  marginBottom: 10,
-},
-userName: {
-  fontSize: 20,
-  fontWeight: 'bold',
-  color: '#333',
-},
-userEmail: {
-  fontSize: 14,
-  color: '#777',
-},
-sectionTitle: {
-  fontSize: 16,
-  fontWeight: 'bold',
-  marginBottom: 10,
-  marginLeft: 5,
-},
+    marginTop: 60,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  userName: {
+    fontSize: 20,
+    fontFamily: 'Grotesk_Medium',
+    color: '#333',
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#777',
+    fontFamily: 'Grotesk_Regular',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    marginLeft: 5,
+  },
+  labelStyle: {
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  errorStyle: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 4,
+  },
+
+  bookTitle: {
+    fontFamily: "Grotesk_Medium",
+    color: "#fff",
+    fontSize: 12,
+  },
+  bookAuthor: {
+    color: "rgb(191, 191, 191)",
+    fontFamily: "Grotesk_Regular",
+    fontSize: 10,
+  },
+  bookCard: {
+    flex: 1,
+    margin: 5,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    overflow: 'hidden',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+
+  bookCover: {
+    width: '100%',
+    aspectRatio: 2 / 3,
+    resizeMode: 'cover',
+    borderRadius: 8,
+  },
+
+  favoriteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 1,
+    backgroundColor: 'rgb(255, 255, 255)',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: "30%",
+    height: "20%",
+  },
+
+  overlayTextContainer: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    zIndex: 1,
+  },
+  searchBar: {
+    flex: 1,
+    fontFamily: "Grotesk_Regular",
+    backgroundColor: "#fff",
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  bookFlatlistContainer: {
+    padding: 10,
+    flex: 1
+  },
+
+  bookItemContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 220, // Fixed height per item
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  //BOOK PAGE
+  author: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    fontFamily: "Grotesk_Regular",
+  },
+  info: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 6,
+    fontFamily: "Grotesk_Light",
+  },
+  synopsis: {
+    fontSize: 14,
+    marginVertical: 10,
+    color: '#333',
+    fontFamily: "Grotesk_Regular",
+    textAlign: "justify",
+  },
+  coverImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
 });

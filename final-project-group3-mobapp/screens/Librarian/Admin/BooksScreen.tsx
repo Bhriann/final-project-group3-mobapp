@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function BooksScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { books, updateBooks } = useContext(Context);
+  const { books, deleteBooks, setSelectedBookId } = useContext(Context);
 
 
   const [showOrientationWarning, setShowOrientationWarning] = useState(true);
@@ -55,28 +55,17 @@ export default function BooksScreen() {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
-          const filteredBooks = books.filter(book => book.id !== id);
-          updateBooks(filteredBooks);
+          deleteBooks(id);
           // Also update AsyncStorage here if needed
         },
       },
     ]);
   };
 
-  const handleOptions = (id: string) => {
-    Alert.alert('Options', 'Choose an action', [
-      {
-        text: 'Edit',
-        //onPress: () => navigation.navigate('EditBook', { bookId: id }),
-      },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => handleDelete(id),
-      },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
+  const handleOnEdit = (id: string) => {
+    setSelectedBookId(id);
+    navigation.navigate('AddBook')
+  }
 
   const handleChangeOrientation = async () => {
     try {
@@ -114,7 +103,7 @@ export default function BooksScreen() {
       </View>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate('AddBook')}
+        onPress={() => {setSelectedBookId(""); navigation.navigate('AddBook')}}
         style={[styles.buttonContainer, { margin: 20, alignSelf: 'center' }]}
       >
         <Text style={styles.buttonText}>Add New Book</Text>
@@ -129,11 +118,18 @@ export default function BooksScreen() {
               {book.cover ? <Image source={{ uri: book.cover }} style={{ width: 100, height: 150 }} /> : null}
             </View>
             <TouchableOpacity
-              onPress={() => handleOptions(book.id)}
+              onPress={() => handleOnEdit(book.id)}
               style={{ padding: 10 }}
-              accessibilityLabel="Options"
             >
-              <Text style={{ fontSize: 24, fontWeight: 'bold' }}>⋮</Text>
+              <Text>Edit</Text>
+            </TouchableOpacity>
+
+            {/*Delete*/}
+            <TouchableOpacity
+              onPress={() => handleDelete(book.id)}
+              style={{ padding: 10 }}
+            >
+              <Text>Delete</Text>
             </TouchableOpacity>
           </View>
         ))}

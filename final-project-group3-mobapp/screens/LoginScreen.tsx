@@ -16,7 +16,7 @@ import { NavigationProp } from '../props and context/navprops';
 
 export default function LoginScreen() {
 
- const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<NavigationProp>();
   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
 
   const { admin, users, librarians, setCurrentAccount } = useContext(Context);
@@ -49,70 +49,78 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: "#FFEFCA" }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={80}
         style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="always"
-          bounces={false}
+          bounces={true}
         >
           <Image
             source={require('../images/LibriLogo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Login</Text>
+          <Text style={styles.title}>Log In</Text>
 
           <Formik
             initialValues={{ email: '', password: '' }}
             validationSchema={LoginSchema}
             onSubmit={handleLogin}
           >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
+            {({ handleChange, handleBlur, handleSubmit, dirty, values, errors, touched, isValid, submitCount }) => (
               <>
-                <TextInput
-                  placeholder="Email"
-                  style={styles.input}
-                  autoCapitalize="none"
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                />
+                <View style={styles.input}>
+                  <TextInput
+                    placeholder="Email"
+                    placeholderTextColor="#888"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    style={styles.inputText}
+                  />
+                </View>
+
                 {errors.email && touched.email && (
                   <Text style={styles.errorText}>{errors.email}</Text>
                 )}
 
-                <View style={styles.passwordInputContainer}>
+                {/* Password */}
+                <View style={styles.input}>
                   <TextInput
                     placeholder="Password"
-                    style={styles.passwordInput}
+                    placeholderTextColor="#888"
                     secureTextEntry={!showPassword}
                     onChangeText={handleChange('password')}
                     onBlur={handleBlur('password')}
                     value={values.password}
+                   style={styles.inputText}
                   />
                   <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                     <Text style={styles.showButtonText}>{showPassword ? 'Hide' : 'Show'}</Text>
                   </TouchableOpacity>
                 </View>
+
                 {errors.password && touched.password && (
                   <Text style={styles.errorText}>{errors.password}</Text>
                 )}
 
+                {/* Submit Button */}
                 <TouchableOpacity
                   style={[
-                    styles.buttonContainer,
-                    { backgroundColor: isValid ? '#007BFF' : '#a0a0a0' },
+                    styles.buttonContainer, {}
                   ]}
-                  onPress={() => handleSubmit()}
-                  disabled={!isValid}
+                  onPress={() => isValid && handleSubmit()}
                 >
-                  <Text style={styles.buttonText}>Login</Text>
+                  <Text style={styles.buttonText}>Log In</Text>
                 </TouchableOpacity>
+
+                 {dirty && submitCount>0 && (
+                                  <Text style={styles.errorText}>Please resolve the errors first!</Text>
+                                )}
 
                 <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                   <Text style={styles.signupText}>Don't have an account? Sign Up</Text>

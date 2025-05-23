@@ -1,18 +1,45 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View } from 'react-native';
 
-// Import Screens
+// Screens
 import UserScreen from '../screens/User/UserScreen';
 import ProfileScreen from '../screens/User/ProfileScreen';
 
+// Icons
+import { Ionicons } from '@expo/vector-icons';
 
-const Tabs = createBottomTabNavigator(); 
+const Tabs = createBottomTabNavigator();
 
 export default function UserTabs() {
   return (
-    <Tabs.Navigator initialRouteName="UserScreen" screenOptions={{ headerShown: false }}>
-      <Tabs.Screen name="UserScreen" component={UserScreen} />
-      <Tabs.Screen name="ProfileScreen" component={ProfileScreen} />
+    <Tabs.Navigator
+      initialRouteName="UserScreen"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name="UserScreen"
+        component={UserScreen}
+        options={{
+          tabBarLabel: 'Library',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name={focused ? 'book' : 'book-outline'} size={24} color={focused ? '#007AFF' : 'gray'} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={focused ? '#007AFF' : 'gray'} />
+          ),
+        }}
+      />
     </Tabs.Navigator>
   );
 }

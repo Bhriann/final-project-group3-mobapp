@@ -1,7 +1,6 @@
 import { useState, ReactNode, useEffect, createContext, useMemo } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { ImageSourcePropType } from "react-native";
-
+import { useFonts } from "expo-font";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //BOOK TYPES
@@ -17,7 +16,8 @@ export interface Book {
   isbn: string;
   edition: string;
   genres: string;
-  copies?: number;
+  copies: number; //copies available
+  availability: boolean,
 }
 
 //ACCOUNT TYPE
@@ -63,7 +63,7 @@ type ContextType = {
   //USER DATA
   favoriteBooks: Favorites[]; //Favorite Accoutns
   toggleFavorite: (bookId: string) => void;
-  borrowHistory: Book[];
+  borrowHistory: BorrowingLog[];
   favoriteBooksList: Book[];
 
   //Persistent User Account
@@ -71,8 +71,9 @@ type ContextType = {
   setCurrentAccount: (type: string) => void;
 
   //Book Data
-  addBook: (book: Book) => void;
-  updateBooks: (books: Book[]) => void;
+  addBooks: (newbook: Book) => void;
+  deleteBooks: (id: string) => void;
+  updateBooks: (bookId: string, updates: Partial<Book>) => void;
 
   // Persistent Book Data
   selectedBook: string;
@@ -112,7 +113,8 @@ export const Context = createContext<ContextType>({
   setCurrentAccount: () => { },
 
   //Book Data
-  addBook: () => { },
+  addBooks: () => { },
+  deleteBooks: () => { },
   updateBooks: () => { },
 
   // Persistent Book Data
@@ -165,7 +167,8 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       isbn: '9788988095508',
       genres: 'Novel',
       copies: 2,
-      edition: "1"
+      edition: "1",
+      availability: true,
     },
     {
       id: '2',
@@ -179,7 +182,8 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       isbn: '9780385031141',
       genres: 'Fiction',
       copies: 2,
-      edition: "1"
+      edition: "1",
+      availability: true,
     },
 
   ]);
@@ -206,7 +210,43 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     };
 
     loadState();
+  }, []);
+
+  useEffect(() => {
+    const saveState = async () => {
+      await AsyncStorage.setItem('books', JSON.stringify(books)).catch((error) => {
+        console.error("Failed to save data:", error)
+      });
+      await AsyncStorage.setItem('favoriteBooks', JSON.stringify(favoriteBooks)).catch((error) => {
+        console.error("Failed to save data:", error)
+      });
+    };
+    saveState();
+  }, [books]);
+
+  useEffect(() => {
+    const saveState = async () => {
+      await AsyncStorage.setItem('logs', JSON.stringify(logs)).catch((error) => {
+        console.error("Failed to save data:", error)
+      });
+    };
+    saveState();
   }, [logs]);
+
+  useEffect(() => {
+    const saveState = async () => {
+      await AsyncStorage.setItem('admin', JSON.stringify(admin)).catch((error) => {
+        console.error("Failed to save data:", error)
+      });
+      await AsyncStorage.setItem('user', JSON.stringify(users)).catch((error) => {
+        console.error("Failed to save data:", error)
+      });
+      await AsyncStorage.setItem('librarian', JSON.stringify(librarians)).catch((error) => {
+        console.error("Failed to save data:", error)
+      });
+    };
+    saveState();
+  }, [users, admin, librarians]);
 
   const [isAdmin, setisAdmin] = useState<boolean>(true);
   const addBook = async (book: Book) => {
@@ -215,10 +255,23 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     await AsyncStorage.setItem('books', JSON.stringify(updated));
   };
 
-  const updateBooks = async (updatedBooks: Book[]) => {
-    setBooks(updatedBooks);
-    await AsyncStorage.setItem('books', JSON.stringify(updatedBooks));
-  };
+  function updateBooks(bookId: string, updates: Partial<Book>) {
+    setBooks(prev => prev.map(book =>
+      book.id === bookId ? { ...book, ...updates } : book
+    ));
+  }
+
+  function deleteBooks(id: string) {
+    setBooks(
+      (prev => prev.filter((book) => book.id !== id))
+    );
+  }
+
+  function addBooks(newBook: Book) {
+    setBooks(
+      prev => [...prev, newBook]
+    );
+  }
 
   const saveFavorites = async (updatedFavorites: Favorites[]) => {
     await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
@@ -229,7 +282,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
 
     setFavoriteBooks((prevFavorites) => {
       const userFavorites = prevFavorites.find(fav => fav.userid === currentAccount);
-console.log("toggled")
+      console.log("toggled")
       if (!userFavorites) {
         // User doesn't have any favorites yet — create new entry
         const newFavorites: Favorites = {
@@ -268,10 +321,7 @@ console.log("toggled")
   const borrowHistory = useMemo(() => {
     if (!logs || !books || !currentAccount) return [];
 
-    const userLogs = logs.filter(log => log.userid === currentAccount);
-    const userBookIds = userLogs.map(log => log.bookid);
-
-    return books.filter(book => userBookIds.includes(book.id));
+    return logs.filter(log => log.userid === currentAccount);
   }, [logs, books, currentAccount]);
 
   const favoriteBooksList = useMemo(() => {
@@ -282,17 +332,15 @@ console.log("toggled")
     return books.filter(book => userFavorites.includes(book.id));
   }, [favoriteBooks, books, currentAccount]);
 
-  /* Fonts paki-ignore muna
- const [fontsLoaded] = useFonts({
-   Grotesk_Bold: require("../assets/ClashGrotesk-Bold.otf"),
-   Grotesk_Extralight: require("../assets/ClashGrotesk-Extralight.otf"),
-   Grotesk_Light: require("../assets/ClashGrotesk-Light.otf"),
-   Grotesk_Medium: require("../assets/ClashGrotesk-Medium.otf"),
-   Grotesk_Regular: require("../assets/ClashGrotesk-Regular.otf"),
-   Grotesk_Semibold: require("../assets/ClashGrotesk-Semibold.otf"),
+  const [fontsLoaded] = useFonts({
+   Grotesk_Bold: require("../assets/fonts/ClashGrotesk-Bold.otf"),
+   Grotesk_Extralight: require("../assets/fonts/ClashGrotesk-Extralight.otf"),
+   Grotesk_Light: require("../assets/fonts/ClashGrotesk-Light.otf"),
+   Grotesk_Medium: require("../assets/fonts/ClashGrotesk-Medium.otf"),
+   Grotesk_Regular: require("../assets/fonts/ClashGrotesk-Regular.otf"),
+   Grotesk_Semibold: require("../assets/fonts/ClashGrotesk-Semibold.otf"),
  });
  
-*/
   return (
     //Call The UseStates here
     <Context.Provider value={{
@@ -319,9 +367,10 @@ console.log("toggled")
       currentAccount,
       setCurrentAccount,
 
-      //Book Data
-      addBook,
+      //CUD Book Data
+      addBooks,
       updateBooks,
+      deleteBooks,
 
       // Persistent Book Data
       selectedBook,

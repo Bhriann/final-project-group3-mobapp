@@ -1,32 +1,23 @@
 import React, { useContext, useState } from 'react';
 import { Context } from '../../props and context/context';
-import { SafeAreaView, Text, View, ScrollView, Image, TouchableOpacity, TextInput, Modal, Pressable, } from 'react-native';
+import { SafeAreaView, Text, View, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, Modal, Pressable, Alert } from 'react-native';
 import { styles } from '../../styles/Stylesheet';
 import { Ionicons } from '@expo/vector-icons';
 import { BorrowingLog } from '../../props and context/context';
 import dayjs from 'dayjs';
-
+import { Book } from '../../props and context/context';
+import { LinearGradient } from 'expo-linear-gradient';
 //Navigation
 import { useNavigation } from '@react-navigation/native';
-//import { UserTabsScreenProps } from '../../props and context/navprops';
-//import { NativeStackScreenProps } from '@react-navigation/native-stack';
-//import { RootStackParamList } from '../../props and context/navprops';
-//type Props = UserTabsScreenProps<'UserScreen'> & NativeStackScreenProps<RootStackParamList, 'Login'>;
-//import { AppStackScreenProps } from '../../props and context/navprops';
-//type Props = AppStackScreenProps<'User'>;
 import { NavigationProp } from '../../props and context/navprops';
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
+export default function UserScreen() {
 
-export default function UserScreen () {
- const navigation = useNavigation<NavigationProp>();
-  const { logs, books, toggleFavorite, currentAccount, setLogs, favoriteBooksList, borrowHistory } = useContext(Context);
+  const navigation = useNavigation<NavigationProp>();
+  const { books, toggleFavorite, setSelectedBookId, currentAccount, favoriteBooksList, users } = useContext(Context);
   const [searchText, setSearchText] = useState('');
   const [sortOption, setSortOption] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-
-  const handleLogout = () => {
-    navigation.navigate('Login');
-  };
-
   const applySort = (option: string) => {
     setSortOption(option);
     setModalVisible(false);
@@ -48,29 +39,18 @@ export default function UserScreen () {
     );
   });
 
-  const addBorrowLog = (bookId: string) => {
-    const newLog: BorrowingLog = {
-      id: (logs.length + 1).toString(),
-      bookid: bookId,
-      userid: currentAccount,
-      dateRequested: dayjs().toString(),
-      dateLent: undefined,
-      dateReturned: undefined,
-    };
-    setLogs(prev => [...prev, newLog]);
-  };
+  const handleBookPress = (id: string) => {
+    setSelectedBookId(id);
+    navigation.navigate('BookPage');
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: "#FFEFCA" }]}>
+
       {/* Header */}
-      <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-        <Text style={styles.headerTitle}>User Dashboard</Text>
-        <TouchableOpacity
-          onPress={handleLogout}
-          style={{ backgroundColor: 'red', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 5 }}
-        >
-          <Text style={{ color: 'white', fontWeight: 'bold' }}>Logout</Text>
-        </TouchableOpacity>
+      <View style={[styles.header, { flexDirection: 'column', }]}>
+        <Text style={styles.title}>Welcome, {users.find((user) => user.id === currentAccount)?.username}</Text>
+        <Text style={styles.mediumfont}>What shall we be reading today?</Text>
       </View>
 
       {/* Search Bar with Filter */}
@@ -79,91 +59,52 @@ export default function UserScreen () {
           placeholder="Search books by title or author"
           value={searchText}
           onChangeText={setSearchText}
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderColor: '#ccc',
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-          }}
+          style={styles.searchBar}
         />
         <TouchableOpacity onPress={() => setModalVisible(true)} style={{ marginLeft: 10, padding: 8 }}>
           <Ionicons name="filter" size={24} color="black" />
         </TouchableOpacity>
       </View>
 
-      {/* Book List */}
-      <ScrollView contentContainerStyle={{ padding: 10 }}>
-        {filteredBooks.map(book => {
-          const isBorrowed = borrowHistory.some(b => b.id === book.id);
-          const isFavorited = favoriteBooksList.some(b => b.id === book.id);
-          return (
-            <View
-              key={book.id}
-              style={{
-                backgroundColor: '#f9f9f9',
-                marginBottom: 15,
-                padding: 15,
-                borderRadius: 10,
-                alignItems: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 4,
-                elevation: 3,
-              }}
-            >
-              <Text style={{ fontWeight: 'bold', fontSize: 18, textAlign: 'center' }}>{book.title}</Text>
-              <Text style={{ fontSize: 14, color: '#555', marginBottom: 8 }}>By: {book.author}</Text>
-              {book.cover ? (
-                <Image
-                  source={{ uri: book.cover }}
-                  style={{ width: '100%', height: 200, resizeMode: 'contain', borderRadius: 8 }}
-                />
-              ) : (
-                <Text style={{ color: '#aaa' }}>[ No Cover Image ]</Text>
-              )}
+      <FlatList
+        style={styles.bookFlatlistContainer}
+        data={filteredBooks}
+        keyExtractor={(item) => item.id}
+        numColumns={3}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <Text style={{ textAlign: 'center', padding: 20 }}>No books found</Text>
+        }
 
-              {/* Borrow & Favorite Buttons */}
-              <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                <TouchableOpacity
-                  onPress={() => addBorrowLog(book.id)}
-                  style={{
-                    backgroundColor: isBorrowed ? '#d9534f' : '#4CAF50',
-                    paddingVertical: 8,
-                    paddingHorizontal: 15,
-                    borderRadius: 5,
-                    marginRight: 10,
-                  }}
-                >
-                  <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                    {isBorrowed ? 'Return' : 'Borrow'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => toggleFavorite(book.id)}
-                  style={{
-                    backgroundColor: isFavorited ? '#777' : '#2196F3',
-                    paddingVertical: 8,
-                    paddingHorizontal: 15,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text style={{ color: 'white', fontWeight: 'bold' }}>
-                    {isFavorited ? 'Unfavorite' : 'Favorite'}
-                  </Text>
-                </TouchableOpacity>
+
+        renderItem={({ item }) => {
+          const isFavorited = favoriteBooksList.some((b) => b.id === item.id);
+          return (
+            <TouchableOpacity style={styles.bookCard} onPress={() => handleBookPress(item.id)}>
+
+              {/* Book Cover */}
+              <Image source={{ uri: item.cover }} style={styles.bookCover} />
+              
+              {/* Dark Gradient Overlay */}
+              <LinearGradient
+                colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
+                locations={[0, 0.5, 1]}
+                style={StyleSheet.absoluteFillObject}
+              />
+              {/* Favorite Star - Top Right */}
+              <TouchableOpacity style={styles.favoriteButton} onPress={() => toggleFavorite(item.id)}>
+                <Text>{isFavorited ? '⭐' : '✩'}</Text>
+              </TouchableOpacity>
+
+              {/* Title & Author Overlay - On top of image */}
+              <View style={styles.overlayTextContainer}>
+                <Text numberOfLines={1} style={[styles.bookTitle ]}>{item.title}</Text>
+                <Text numberOfLines={1} style={[styles.bookAuthor]}>{item.author}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           );
-        })}
-        {filteredBooks.length === 0 && (
-          <View style={{ padding: 20 }}>
-            <Text style={{ textAlign: 'center', color: '#555' }}>No books found.</Text>
-          </View>
-        )}
-      </ScrollView>
+        }}
+      />
 
       {/* Filter Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent>

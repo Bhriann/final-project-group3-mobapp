@@ -14,7 +14,7 @@ import { ContextProvider } from './props and context/context';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import AddBookScreen from './screens/Librarian/Admin/AddBookScreen';
-import BookPage  from './screens/BookPage';
+import BookPage  from './screens/User/BookPage';
 import LoadingScreen from './screens/LoadingScreen';
 import {RootStackParamList} from './props and context/navprops';
 import AdminTabs from './Tabs/AdminTabs';

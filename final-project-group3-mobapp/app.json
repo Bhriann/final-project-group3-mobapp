@@ -11,7 +11,8 @@
           "requiresFullScreen": true,
           "initialOrientation": "portrait"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,11 +22,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    
     "ios": {
       "supportsTablet": true
     },
-    
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
