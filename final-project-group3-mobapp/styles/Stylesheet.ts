@@ -413,4 +413,66 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
   },
+  reportContainer: {
+  padding: 20,
+},
+
+// reportscreen
+dateRangeContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  marginBottom: 20,
+},
+
+dateText: {
+  fontSize: 16,
+  color: '#333',
+},
+
+statsContainer: {
+  backgroundColor: '#f0f0f0',
+  padding: 15,
+  borderRadius: 8,
+  marginBottom: 20,
+},
+
+statsText: {
+  fontSize: 16,
+  marginVertical: 4,
+},
+
+quickFiltersContainer: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  gap: 10, 
+  marginTop: 10,
+},
+
+quickFilterButton: {
+  backgroundColor: '#E0E0E0',
+  padding: 8,
+  borderRadius: 6,
+  marginHorizontal: 4,
+  marginVertical: 4,
+},
+
+quickFilterText: {
+  fontSize: 14,
+  fontWeight: '600',
+},
+
+quickFilterTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  width: '100%',
+  marginBottom: 5,
+},
+quickFiltersRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingHorizontal: 10,
+  marginVertical: 10,
+  flexWrap: 'wrap',
+},
 });
