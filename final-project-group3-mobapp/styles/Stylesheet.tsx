@@ -71,6 +71,14 @@ export const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center'
   },
+  logButtonContainer: {
+    backgroundColor: '#2A53A0',
+    paddingVertical:10,
+    paddingHorizontal:20,
+    borderRadius: 5,
+    justifyContent:'center',
+    alignItems:'center'
+  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
@@ -187,15 +195,10 @@ export const styles = StyleSheet.create({
   },
   cell: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
     color: '#555',
     padding: 4,
-  },
-  actionCell: {
-    flex: 1,
-    textAlign: 'center',
-    alignItems: 'center',
   },
   scrollContent: {
     flexGrow: 1,
@@ -490,5 +493,51 @@ quickFiltersRow: {
   paddingHorizontal: 10,
   marginVertical: 10,
   flexWrap: 'wrap',
+
+},filterBar: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  paddingTop: 10,
+  backgroundColor: '#f8f8f8',
 },
+filterButton: {
+  backgroundColor: '#e0e0e0',
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  margin: 4,
+  borderRadius: 20,
+},
+filterButtonActive: {
+  backgroundColor: '#007AFF',
+},
+filterButtonText: {
+  color: '#333',
+  fontSize: 14,
+  fontWeight: '500',
+},
+filterButtonTextActive: {
+  color: '#fff',
+},
+sortButton: {
+  backgroundColor: '#e0e0e0',
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  margin: 4,
+  borderRadius: 20,
+},
+dateButton: {
+  backgroundColor: '#f0f0f0',
+  paddingHorizontal: 12,
+  paddingVertical: 6,
+  margin: 4,
+  borderRadius: 8,
+},
+view: {
+  color:"#3D75AC",
+},
+delete: {
+  color:"#AD0305",
+},
+
 });

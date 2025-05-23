@@ -17,7 +17,6 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { Context } from '../../../props and context/context';
-import { Book } from '../../../props and context/context';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { styles } from '../../../styles/Stylesheet';
@@ -347,13 +346,7 @@ export default function AddBookScreen() {
                     {/* Submit Button */}
                     <TouchableOpacity
                       onPress={() => handleSubmit()}
-                      style={{
-                        backgroundColor: '#28a745',
-                        paddingVertical: 14,
-                        borderRadius: 8,
-                        alignItems: 'center',
-                        marginTop: 20,
-                      }}
+                       style={styles.buttonContainer}
                     >
                       <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
                         {isEditing ? 'Update Book' : 'Publish'}
@@ -363,12 +356,12 @@ export default function AddBookScreen() {
                     {/* Cancel Button */}
                     <TouchableOpacity
                       onPress={() => navigation.goBack()}
-                      style={{
+                       style={{
+                        marginTop: 12,
+                        padding: 14,
                         backgroundColor: '#dc3545',
-                        paddingVertical: 14,
                         borderRadius: 8,
                         alignItems: 'center',
-                        marginTop: 12,
                       }}
                     >
                       <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Cancel</Text>

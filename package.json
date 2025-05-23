@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-native-file-viewer": "^2.1.5"
+  }
+}

@@ -20,7 +20,8 @@ import {RootStackParamList} from './props and context/navprops';
 import AdminTabs from './Tabs/AdminTabs';
 import LibrarianTabs from './Tabs/LibrarianTabs';
 import UserTabs from './Tabs/UserTabs';
-
+import AddLogScreen from './screens/Librarian/Admin/AddLogScreen';
+import AddAccountScreen from './screens/Librarian/Admin/AddAccountScreen';
 const Stack = createNativeStackNavigator();
 
 // --- Main App Component ---
@@ -59,6 +60,8 @@ export default function App() {
             {/* Standalone Screens */}
             <Stack.Screen name="AddBook" component={AddBookScreen} />
             <Stack.Screen name="BookPage" component={BookPage} />
+            <Stack.Screen name="AddLog" component={AddLogScreen} />
+            <Stack.Screen name="AddAccount" component={AddAccountScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </ContextProvider>

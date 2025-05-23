@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, FlatList, Image, Alert, Modal, useWindowDimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, FlatList, Alert, Modal, useWindowDimensions } from 'react-native';
 
 import { Context } from '../../../props and context/context';
 import { styles } from '../../../styles/Stylesheet';
@@ -8,6 +8,8 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 //Navigation
 import { NavigationProp } from '../../../props and context/navprops';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function BooksScreen() {
 
@@ -21,16 +23,28 @@ export default function BooksScreen() {
   const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
 
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchText, setSearchText] = useState('');
 
   const sortedBooks = useMemo(() => {
-    return [...books].sort((a, b) => {
+    const searchLower = searchText.toLowerCase();
+    let filtered = books.filter((book) =>
+      book.id.toLowerCase().includes(searchLower) ||
+      book.title.toLowerCase().includes(searchLower) ||
+      book.author.toLowerCase().includes(searchLower) ||
+      book.publisher.toLowerCase().includes(searchLower) ||
+      book.genres.toLowerCase().includes(searchLower) ||
+      book.year.toLowerCase().includes(searchLower) ||
+      book.copies.toString().includes(searchLower)
+    );
+
+    return [...filtered].sort((a, b) => {
       if (sortOrder === 'asc') {
-        return a.title.localeCompare(b.title);
+        return parseInt(a.id) - parseInt(b.id);
       } else {
-        return b.title.localeCompare(a.title);
+        return parseInt(b.id) - parseInt(a.id);
       }
     });
-  }, [books, sortOrder]);
+  }, [books, sortOrder, searchText]);
 
   //Change Orientation
   useEffect(() => {
@@ -93,37 +107,53 @@ export default function BooksScreen() {
     setSelectedBookId(id);
     navigation.navigate('AddBook')
   }
+  const handleAdd = () => {
+      setSelectedBookId("");
+    navigation.navigate('AddBook');
+  }
 
   return (
     <SafeAreaView style={[styles.container, { paddingRight: 20, paddingLeft: isLandscape ? 60 : 20 }]}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={styles.title}>Library Archives</Text>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={styles.title}>Librarian Books</Text>
-        <TouchableOpacity
-          onPress={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-          style={{ padding: 10, backgroundColor: '#f0f0f0', borderRadius: 8, alignSelf: 'flex-end', marginBottom: 10 }}
-        >
-          <Text>{sortOrder === 'asc' ? 'A→Z' : 'Z→A'}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => { setSelectedBookId(""); navigation.navigate('AddBook') }}
-          style={[styles.buttonContainer, { margin: 20, alignSelf: 'center' }]}
-        >
-          <Text style={styles.buttonText}>Add New Book</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+          <TouchableOpacity  style={[styles.buttonContainer, { marginRight:20, alignSelf: 'center' }]} onPress={() => handleAdd()}>
+            <Text style={styles.buttonText}>Add New Book</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
+      {/* Full Width Search Bar Below */}
+      <View style={{ paddingHorizontal: 10, marginBottom: 10 }}>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: '#f5f5f5',
+          borderRadius: 8,
+          paddingHorizontal: 10,
+        }}>
+          <TextInput
+            placeholder="Search books by id, title, author, publisher, year, genres, or copies"
+            value={searchText}
+            onChangeText={setSearchText}
+            style={{
+
+              paddingVertical: 5,
+              fontSize: 12,
+            }}
+          />
+        </View>
+      </View>
+
       {/* Table Header */}
       <View style={[styles.table_header]}>
         <Text numberOfLines={1} style={[styles.heading]}>ID</Text>
-        <Text numberOfLines={1} style={[styles.heading]}>Cover</Text>
         <Text numberOfLines={1} style={[styles.heading]}>Title</Text>
         <Text numberOfLines={1} style={[styles.heading]}>Author(s)</Text>
-        <Text numberOfLines={1} style={[styles.heading]}>Synopsis</Text>
         <Text numberOfLines={1} style={[styles.heading]}>Publisher</Text>
         <Text numberOfLines={1} style={[styles.heading]}>Year</Text>
-        <Text numberOfLines={1} style={[styles.heading]}>Acquisition Date</Text>
-        <Text numberOfLines={1} style={[styles.heading]}>ISBN</Text>
-        <Text numberOfLines={1} style={[styles.heading]}>Edition</Text>
         <Text numberOfLines={1} style={[styles.heading]}>Genres</Text>
         <Text numberOfLines={1} style={[styles.heading]}>Copies</Text>
         <Text numberOfLines={1} style={[styles.heading]}></Text>
@@ -131,60 +161,29 @@ export default function BooksScreen() {
       </View>
 
       <FlatList
-        data={sortedBooks}
         style={{ flex: 1 }}
+        data={sortedBooks}
         keyExtractor={(item) => item.id}
         extraData={sortedBooks}
         ListEmptyComponent={<Text style={{ textAlign: "center", padding: 20 }}>No Logs Match...</Text>}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            {/* ID */}
             <Text numberOfLines={1} style={styles.cell}>{item.id}</Text>
-
-            {/* Cover */}
-            <Text numberOfLines={1} style={styles.cell}>{item.cover}  </Text>
-
-            {/* Title */}
             <Text numberOfLines={1} style={styles.cell}>{item.title}</Text>
-
-            {/* Author */}
             <Text numberOfLines={1} style={styles.cell}>{item.author}</Text>
-
-            {/* Synopsis */}
-            <Text numberOfLines={1} style={styles.cell}>{item.synopsis}</Text>
-
-            {/* Publisher */}
             <Text numberOfLines={1} style={styles.cell}>{item.publisher}</Text>
-
-            {/* Year */}
             <Text numberOfLines={1} style={styles.cell}>{item.year}</Text>
-
-            {/* Acq Date */}
-            <Text numberOfLines={1} style={styles.cell}>{item.acqDate}</Text>
-
-            {/* ISBN */}
-            <Text numberOfLines={1} style={styles.cell}>{item.isbn}</Text>
-
-            {/* Edition */}
-            <Text numberOfLines={1} style={styles.cell}>{item.edition}</Text>
-
-            {/* Genres */}
             <Text numberOfLines={1} style={styles.cell}>{item.genres}</Text>
-
-            {/* Available Copies */}
             <Text numberOfLines={1} style={styles.cell}>{item.copies}</Text>
-
-            {/* Action Buttons */}
-
-            <View style={styles.actionCell}>
+            <View style={styles.cell}>
               <TouchableOpacity onPress={() => handleOnEdit(item.id)}>
-                <Text>View</Text>
+                <Text style={styles.view}>View</Text>
               </TouchableOpacity>
             </View>
 
-            <View style={styles.actionCell}>
+            <View style={styles.cell}>
               <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Text>Delete</Text>
+                <Text style={styles.delete}>Delete</Text>
               </TouchableOpacity>
             </View>
 

@@ -12,6 +12,8 @@ export type RootStackParamList = {
 
   AddBook: undefined;
   BookPage: undefined;
+  AddLog: undefined;
+  AddAccount: undefined;
 };
 
 export type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

@@ -16,16 +16,20 @@ export default function ProfileScreen() {
 
   const [borrowHistoryObjects, setBorrowHistoryObjects] = useState<Book[]>([]);
   const [bookRequestObjects, setBookRequestObjects] = useState<Book[]>([]);
- 
+   const [favoriteObjects, setfavoriteObjects] = useState<Book[]>([]);
+  // Derived values
+   const isAdmin = useMemo(() => currentAccount?.slice(0, 2) === "AD", [currentAccount]);
  useMemo(() => {
     const borrowBookId = borrowHistory.filter((log) => log.dateLent).map((book) => book.bookid);
     const borrowedBooks = borrowBookId.flatMap(id => books.find(book => book.id === id) ?? []);  //filters out undefined, returns Book[] type objects
-    setBorrowHistoryObjects(borrowedBooks);
+    setBorrowHistoryObjects(borrowedBooks.reverse());
 
     const requestBookId = borrowHistory.filter((log) => !log.dateLent).map((book) => book.bookid);
     const requestedBooks = requestBookId.flatMap(id => books.find(book => book.id === id) ?? []);  //filters out undefined, returns Book[] type objects
-    setBookRequestObjects(requestedBooks);
-  }, [borrowHistory]);
+    setBookRequestObjects(requestedBooks.reverse());
+
+    setfavoriteObjects(favoriteBooksList.reverse())
+  }, [borrowHistory, favoriteBooksList]);
 
   const handleLogout = () => {
     navigation.navigate('Login');
@@ -55,26 +59,26 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: "#FFEFCA" }]}>
-      {/* Logout Button - Top Right */}
-      <View style={{
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        zIndex: 10,
-      }}>
-        <TouchableOpacity onPress={handleLogout} style={{
-          backgroundColor: '#AC0306',
-          paddingVertical: 6,
-          paddingHorizontal: 12,
-          borderRadius: 5,
-        }}>
-          <Text style={{ color: 'white', fontFamily: 'Grotesk_Medium'}}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-
+       <View style={{
+             position: 'absolute',
+             top: 20,
+             right: 20,
+             zIndex: 10,
+           }}>
+             <TouchableOpacity onPress={()=> handleLogout()} style={{
+               backgroundColor: '#AC0306',
+               paddingVertical: 6,
+               paddingHorizontal: 12,
+               borderRadius: 5,
+             }}>
+               <Text style={{ color: 'white', fontFamily: 'Grotesk_Medium'}}>Logout</Text>
+             </TouchableOpacity>
+           </View>
+     
+         
        {/* User Header */}
   <View style={styles.profileHeader}>
-    <Image source={{ uri: 'https://i.pravatar.cc/150 ' }} style={styles.avatar} />
+    <Image source={{uri: users.find((user) => user.id === currentAccount)?.icon }} style={styles.avatar} />
     <Text style={styles.userName}>{users.find((user) => user.id === currentAccount)?.username}</Text>
     <Text style={styles.userEmail}>{users.find((user) => user.id === currentAccount)?.email}</Text>
   </View>
@@ -89,7 +93,7 @@ export default function ProfileScreen() {
       <Text style={styles.profileTitle}>Requested Books</Text>
       <FlatList
       style={{marginLeft:10}}
-        data={bookRequestObjects.reverse()}
+        data={bookRequestObjects}
         renderItem={renderBookItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -103,7 +107,7 @@ export default function ProfileScreen() {
       <Text style={styles.profileTitle}>Borrowed Books</Text>
       <FlatList
        style={{marginLeft:10}}
-        data={borrowHistoryObjects.reverse()}
+        data={borrowHistoryObjects}
         renderItem={renderBookItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -117,7 +121,7 @@ export default function ProfileScreen() {
       <Text style={styles.profileTitle}>Favorite Books</Text>
       <FlatList
          style={{marginLeft:10}}
-        data={favoriteBooksList.reverse()}
+        data={favoriteObjects}
         renderItem={renderBookItem}
         keyExtractor={(item) => item.id}
         horizontal
@@ -126,7 +130,7 @@ export default function ProfileScreen() {
       />
     </View>
   </ScrollView>
-    </SafeAreaView>
+  </SafeAreaView>
   );
 };
 

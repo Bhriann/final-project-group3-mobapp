@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -22,15 +22,12 @@ import { useNavigation } from '@react-navigation/native';
 
 // PDF generator
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-
-
 dayjs.locale('en');
 dayjs.extend(isBetween);
 
 export default function ReportsScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { books, logs, setCurrentAccount } = useContext(Context);
-
+  const { books, logs, setCurrentAccount, currentAccount} = useContext(Context);
   // Filtered logs state
   const [filteredLogs, setFilteredLogs] = useState(logs);
 
@@ -121,28 +118,28 @@ export default function ReportsScreen() {
     }
   };
 
-  // **ADDED**: Request storage permission on Android
   const requestStoragePermission = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission',
-            message: 'App needs access to your storage to save PDFs',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn('Permission request error:', err);
-        return false;
-      }
+  if (Platform.OS === 'android') {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission',
+          message: 'LibriApp needs access to save PDF reports.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn('Permission request error:', err);
+      return false;
     }
-    return true; // iOS doesn't require permission
-  };
+  }
+  return true; // iOS doesn't need explicit permission
+};
+
 
   // Generate PDF function
   const generatePDF = async () => {
@@ -185,18 +182,42 @@ export default function ReportsScreen() {
     const file = await RNHTMLtoPDF.convert(options);
     console.log('PDF File Path:', file.filePath);
 
+      // Inside try block after generating file
     Alert.alert('PDF Generated!', `Saved at:\n${file.filePath}`);
   } catch (error) {
     console.error('PDF Generation Error:', error);
     Alert.alert('Error', 'Failed to generate PDF.');
   }
+
+
+
 };
 
+ 
+ const isAdmin = useMemo(() => currentAccount?.slice(0, 2) === "AD", [currentAccount]);
   return (
     <SafeAreaView style={styles.container}>
+
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Reports</Text>
+         {isAdmin && <View style={{
+                     position: 'absolute',
+                     top: 20,
+                     right: 20,
+                     zIndex: 10,
+                   }}>
+                     <TouchableOpacity onPress={()=> handleLogout()} style={{
+                       backgroundColor: '#AC0306',
+                       paddingVertical: 6,
+                       paddingHorizontal: 12,
+                       borderRadius: 5,
+                     }}>
+                       <Text style={{ color: 'white', fontFamily: 'Grotesk_Medium'}}>Logout</Text>
+                     </TouchableOpacity>
+                   </View>
+             
+                   }
       </View>
 
       <ScrollView contentContainerStyle={styles.reportContainer}>
@@ -236,7 +257,7 @@ export default function ReportsScreen() {
 
         {/* Generate PDF Button */}
         <View style={{ marginTop: 20, alignItems: 'center' }}>
-          <TouchableOpacity onPress={generatePDF} style={styles.quickFilterButton}>
+          <TouchableOpacity onPress={() => generatePDF()} style={styles.quickFilterButton}>
             <Text style={styles.quickFilterText}>Generate PDF</Text>
           </TouchableOpacity>
         </View>

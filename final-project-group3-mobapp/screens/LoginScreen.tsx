@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { SafeAreaView, Text, View, Alert, TouchableOpacity, TextInput, Image, KeyboardAvoidingView, Platform, ScrollView, } from 'react-native';
+import { SafeAreaView, Text, View, Alert, TouchableOpacity, TextInput, Image, useWindowDimensions, KeyboardAvoidingView, Platform, ScrollView, } from 'react-native';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -8,8 +8,6 @@ import * as Yup from 'yup';
 import { Context } from '../props and context/context';
 import { styles } from '../styles/Stylesheet';
 
-
-// Screen Orientation
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '../props and context/navprops';
 
@@ -32,6 +30,7 @@ export default function LoginScreen() {
     const foundLibrarian = librarians.find((acc) => acc.email === email && acc.password === password);
     const foundUser = users.find((acc) => acc.email === email && acc.password === password);
 
+
     if (foundAdmin) {
       setCurrentAccount(foundAdmin.id);
       navigation.replace('Admin');
@@ -45,9 +44,11 @@ export default function LoginScreen() {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
-
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: "#FFEFCA" }]}>
+    <SafeAreaView style={[styles.container, { paddingRight: 20, paddingLeft: isLandscape ? 60 : 20, backgroundColor: "#FFEFCA" }]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}

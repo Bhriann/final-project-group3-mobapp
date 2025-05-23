@@ -21,11 +21,13 @@ export interface Book {
 }
 
 //ACCOUNT TYPE
-interface Accounts {
+export interface Accounts {
   id: string;
   username: string;
   email: string;
   password: string;
+  icon: string;
+  [key: string]: any;
 }
 
 //LOG TYPE
@@ -59,7 +61,9 @@ type ContextType = {
   setAdmin: React.Dispatch<React.SetStateAction<Accounts[]>>;
   setUsers: React.Dispatch<React.SetStateAction<Accounts[]>>;
   setLibrarians: React.Dispatch<React.SetStateAction<Accounts[]>>;
-  setFavoriteBooks:React.Dispatch<React.SetStateAction<Favorites[]>>;
+  setFavoriteBooks: React.Dispatch<React.SetStateAction<Favorites[]>>;
+  setTargetAccount: React.Dispatch<React.SetStateAction<string>>;
+  targetAccount: string;
 
   //USER DATA
   favoriteBooks: Favorites[]; //Favorite Accoutns
@@ -83,6 +87,8 @@ type ContextType = {
   //Logs
   deleteLogs: (logs_del: string[]) => void;
   setLogs: React.Dispatch<React.SetStateAction<BorrowingLog[]>>;
+  currentLog: string;
+  setCurrentLog: React.Dispatch<React.SetStateAction<string>>;
 };
 
 interface ContextProviderProps {
@@ -102,6 +108,9 @@ export const Context = createContext<ContextType>({
   setAdmin: () => { },
   setUsers: () => { },
   setLibrarians: () => { },
+  targetAccount: "",
+  setTargetAccount: () => { },
+
 
   //USER DATA
   favoriteBooks: [], //Favorite Accoutns
@@ -126,6 +135,8 @@ export const Context = createContext<ContextType>({
   //Logs
   deleteLogs: () => { },
   setLogs: () => { },
+  currentLog: "",
+  setCurrentLog: () => { },
 });
 
 export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) => {
@@ -135,16 +146,16 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
   ])
 
   const [admin, setAdmin] = useState<Accounts[]>([
-    { id: "AD000000", username: "Admin", email: "admin@example.com", password: "admin123" },   //Initialized Admin,
+    { id: "AD000000", username: "Admin", email: "admin@example.com", password: "admin123", icon: "https://avatar.iran.liara.run/public"},   //Initialized Admin,
   ])
 
   const [librarians, setLibrarians] = useState<Accounts[]>([
-    { id: "LB000000", username: "John", email: "john@example.com", password: "john123" },   //Initialized Two Librarians
-    { id: "LB000001", username: "Mary", email: "mary@example.com", password: "mary123" },
+    { id: "LB000000", username: "John", email: "john@example.com", password: "john123", icon: "https://avatar.iran.liara.run/public"},   //Initialized Two Librarians
+    { id: "LB000001", username: "Mary", email: "mary@example.com", password: "mary123" , icon: "https://avatar.iran.liara.run/public"},
   ])
 
   const [users, setUsers] = useState<Accounts[]>([
-    { id: "US000001", username: "Peter", email: "peter@example.com", password: "peter123" },   //Initialized One User
+    { id: "US000001", username: "Peter", email: "peter@example.com", password: "peter123", icon: "https://avatar.iran.liara.run/public" },   //Initialized One User
   ])
 
   //Logs Event Handlers
@@ -190,7 +201,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
 
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     const loadState = async () => {
       const storedBooks = await AsyncStorage.getItem('books');
       if (storedBooks) setBooks(JSON.parse(storedBooks));
@@ -214,41 +225,53 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     loadState();
   }, []);
 
-  useEffect(() => {
-    const saveState = async () => {
-      await AsyncStorage.setItem('books', JSON.stringify(books)).catch((error) => {
-        console.error("Failed to save data:", error)
-      });
-      await AsyncStorage.setItem('favoriteBooks', JSON.stringify(favoriteBooks)).catch((error) => {
-        console.error("Failed to save data:", error)
-      });
-    };
-    saveState();
-  }, [books, favoriteBooks]);
+ useEffect(() => {
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('books', JSON.stringify(books));
+    } catch (error) {
+      console.error("Failed to save books:", error);
+    }
+  };
+
+  saveData();
+}, [books]);
+
+useEffect(() => {
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('favoriteBooks', JSON.stringify(favoriteBooks));
+    } catch (error) {
+      console.error("Failed to save favorites:", error);
+    }
+  };
+
+  saveData();
+}, [favoriteBooks]);
+
+ useEffect(() => {
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('logs', JSON.stringify(logs));
+    } catch (error) {
+      console.error("Failed to save logs:", error);
+    }
+  };
+
+  saveData();
+}, [logs]);
 
   useEffect(() => {
-    const saveState = async () => {
-      await AsyncStorage.setItem('logs', JSON.stringify(logs)).catch((error) => {
-        console.error("Failed to save data:", error)
-      });
-    };
-    saveState();
-  }, [logs]);
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('admin', JSON.stringify(admin));
+    } catch (error) {
+      console.error("Failed to save admin:", error);
+    }
+  };
 
-  useEffect(() => {
-    const saveState = async () => {
-      await AsyncStorage.setItem('admin', JSON.stringify(admin)).catch((error) => {
-        console.error("Failed to save data:", error)
-      });
-      await AsyncStorage.setItem('user', JSON.stringify(users)).catch((error) => {
-        console.error("Failed to save data:", error)
-      });
-      await AsyncStorage.setItem('librarian', JSON.stringify(librarians)).catch((error) => {
-        console.error("Failed to save data:", error)
-      });
-    };
-    saveState();
-  }, [users, admin, librarians]);
+  saveData();
+}, [admin]);
 
   const [isAdmin, setisAdmin] = useState<boolean>(true);
   const addBook = async (book: Book) => {
@@ -262,6 +285,31 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       book.id === bookId ? { ...book, ...updates } : book
     ));
   }
+
+  useEffect(() => {
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('users', JSON.stringify(users));
+    } catch (error) {
+      console.error("Failed to save users:", error);
+    }
+  };
+
+  saveData();
+}, [users]);
+
+useEffect(() => {
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('librarians', JSON.stringify(librarians));
+    } catch (error) {
+      console.error("Failed to save librarians:", error);
+    }
+  };
+
+  saveData();
+}, [librarians]);
+
 
   function deleteBooks(id: string) {
     setBooks(
@@ -283,7 +331,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       console.log("toggled")
       if (!userFavorites) {
         const newFavorites: Favorites = {
-          id: (favoriteBooks.length+1).toString(),
+          id: (favoriteBooks.length + 1).toString(),
           userid: currentAccount,
           bookids: [bookId],
         };
@@ -326,15 +374,18 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     return books.filter(book => userFavorites.includes(book.id));
   }, [favoriteBooks, books, currentAccount]);
 
+  const [targetAccount, setTargetAccount] = useState<string>("")
+  const [currentLog, setCurrentLog] = useState<string>("")
+  
   const [fontsLoaded] = useFonts({
-   Grotesk_Bold: require("../assets/fonts/ClashGrotesk-Bold.otf"),
-   Grotesk_Extralight: require("../assets/fonts/ClashGrotesk-Extralight.otf"),
-   Grotesk_Light: require("../assets/fonts/ClashGrotesk-Light.otf"),
-   Grotesk_Medium: require("../assets/fonts/ClashGrotesk-Medium.otf"),
-   Grotesk_Regular: require("../assets/fonts/ClashGrotesk-Regular.otf"),
-   Grotesk_Semibold: require("../assets/fonts/ClashGrotesk-Semibold.otf"),
- });
- 
+    Grotesk_Bold: require("../assets/fonts/ClashGrotesk-Bold.otf"),
+    Grotesk_Extralight: require("../assets/fonts/ClashGrotesk-Extralight.otf"),
+    Grotesk_Light: require("../assets/fonts/ClashGrotesk-Light.otf"),
+    Grotesk_Medium: require("../assets/fonts/ClashGrotesk-Medium.otf"),
+    Grotesk_Regular: require("../assets/fonts/ClashGrotesk-Regular.otf"),
+    Grotesk_Semibold: require("../assets/fonts/ClashGrotesk-Semibold.otf"),
+  });
+
   return (
     //Call The UseStates here
     <Context.Provider value={{
@@ -350,6 +401,8 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       setAdmin,
       setUsers,
       setLibrarians,
+      targetAccount,
+      setTargetAccount,
 
       //USER DATA
       favoriteBooks,
@@ -374,6 +427,8 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       //Logs
       deleteLogs,
       setLogs,
+      currentLog,
+      setCurrentLog
     }}>
       {children}
     </Context.Provider>
