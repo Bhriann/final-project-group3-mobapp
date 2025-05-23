@@ -10,14 +10,12 @@ import { styles } from '../styles/Stylesheet';
 
 
 // Screen Orientation
-import * as ScreenOrientation from 'expo-screen-orientation';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '../props and context/navprops';
 
 export default function LoginScreen() {
 
   const navigation = useNavigation<NavigationProp>();
-  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
 
   const { admin, users, librarians, setCurrentAccount } = useContext(Context);
   const [showPassword, setShowPassword] = useState(false);

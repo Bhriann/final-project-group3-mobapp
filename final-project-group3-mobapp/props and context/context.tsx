@@ -59,6 +59,7 @@ type ContextType = {
   setAdmin: React.Dispatch<React.SetStateAction<Accounts[]>>;
   setUsers: React.Dispatch<React.SetStateAction<Accounts[]>>;
   setLibrarians: React.Dispatch<React.SetStateAction<Accounts[]>>;
+  setFavoriteBooks:React.Dispatch<React.SetStateAction<Favorites[]>>;
 
   //USER DATA
   favoriteBooks: Favorites[]; //Favorite Accoutns
@@ -107,6 +108,7 @@ export const Context = createContext<ContextType>({
   toggleFavorite: () => { },
   borrowHistory: [],
   favoriteBooksList: [],
+  setFavoriteBooks: () => { },
 
   //Persistent User Account
   currentAccount: "", //current ID ng User Account to keep track of their favorites and their borrowing logs.
@@ -222,7 +224,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       });
     };
     saveState();
-  }, [books]);
+  }, [books, favoriteBooks]);
 
   useEffect(() => {
     const saveState = async () => {
@@ -273,10 +275,6 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
     );
   }
 
-  const saveFavorites = async (updatedFavorites: Favorites[]) => {
-    await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-    setFavoriteBooks(updatedFavorites);
-  };
 
   const toggleFavorite = async (bookId: string) => {
 
@@ -284,15 +282,13 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       const userFavorites = prevFavorites.find(fav => fav.userid === currentAccount);
       console.log("toggled")
       if (!userFavorites) {
-        // User doesn't have any favorites yet — create new entry
         const newFavorites: Favorites = {
-          id: Date.now().toString(), // simple ID generation
+          id: (favoriteBooks.length+1).toString(),
           userid: currentAccount,
           bookids: [bookId],
         };
 
         const updated = [...prevFavorites, newFavorites];
-        saveFavorites(updated);
         return updated;
       }
 
@@ -306,8 +302,6 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
           ? { ...fav, bookids: updatedBookIds }
           : fav
       );
-
-      saveFavorites(updatedFavorites);
       return updatedFavorites;
     });
   };
@@ -362,6 +356,7 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({ children }) =>
       toggleFavorite,
       borrowHistory,
       favoriteBooksList,
+      setFavoriteBooks,
 
       //Persistent User Account
       currentAccount,

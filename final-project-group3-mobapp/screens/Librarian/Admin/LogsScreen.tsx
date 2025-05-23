@@ -12,12 +12,6 @@ export default function LogsScreen(){
 
   const navigation = useNavigation<NavigationProp>();
   const { } = useContext(Context);
-  //const changeOrientation = async () => {
-   // await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT); //Change Landscape
-    //await ScreenOrientation.unlockAsync();
-  //}
-
-//  changeOrientation();
   return (
      
     <SafeAreaView style={styles.container}>

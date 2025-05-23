@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useCallback } from "react";
-import { FlatList, View, Text, TouchableOpacity, } from "react-native";
+import { FlatList, View, Text, TouchableOpacity, useWindowDimensions } from "react-native";
 import { Context } from "../props and context/context";
 import { styles } from "../styles/Stylesheet";
 import dayjs from "dayjs";
@@ -10,7 +10,10 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 dayjs.extend(isBetween);
 
 export const RenderLogs = () => {
-    const { logs, deleteLogs, currentAccount, setLogs } = useContext(Context);
+    const { width, height } = useWindowDimensions();
+    const isLandscape = width > height;
+
+    const { logs, deleteLogs, currentAccount, setLogs, setCurrentAccount } = useContext(Context);
 
     // States
     const [filterType, setFilterType] = useState<"all" | "requested" | "checkedOut" | "returned">("all");
@@ -84,26 +87,30 @@ export const RenderLogs = () => {
         setEndDate(dayjs().toDate());
     }, []);
 
-   const handleRequest = (logId: string) => {
-  setLogs((prevLogs) =>
-    prevLogs.map((log) =>
-      log.id === logId && !log.dateLent
-        ? { ...log, dateLent: dayjs().toISOString() }
-        : log
-    )
-  );
-};
-const handleReturn = (logId: string) => {
-  setLogs((prevLogs) =>
-    prevLogs.map((log) =>
-      log.id === logId && log.dateLent && !log.dateReturned
-        ? { ...log, dateReturned: dayjs().toISOString() }
-        : log
-    )
-  );
-};
+    const handleRequest = (logId: string) => {
+        setLogs((prevLogs) =>
+            prevLogs.map((log) =>
+                log.id === logId && !log.dateLent
+                    ? { ...log, dateLent: dayjs().toISOString() }
+                    : log
+            )
+        );
+    };
+    const handleReturn = (logId: string) => {
+        setLogs((prevLogs) =>
+            prevLogs.map((log) =>
+                log.id === logId && log.dateLent && !log.dateReturned
+                    ? { ...log, dateReturned: dayjs().toISOString() }
+                    : log
+            )
+        );
+    };
+
+    const handleEdit = () => {
+     console.log('Edit')
+    }
     return (
-        <View style={{ flex: 1 }}>
+        <View style={[styles.container, { paddingLeft: isLandscape ? 80 : 40 }]}>
             {/* Buttons */}
             <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <TouchableOpacity onPress={() => handleSetFilterType("all")}>
@@ -165,15 +172,22 @@ const handleReturn = (logId: string) => {
                         <EllipsisText style={styles.cell}>{item.userid}</EllipsisText>
                         <EllipsisText style={styles.cell}>{item.bookid}</EllipsisText>
                         <EllipsisText style={styles.cell}>{item.dateRequested || ''}</EllipsisText>
-                        <TouchableOpacity onPress={() => handleRequest(item.id)} disabled={!item.dateLent ? true : false} >
-                            <EllipsisText style={styles.cell}>{item.dateLent || item.dateRequested && 'Lend'}</EllipsisText>
+
+                        <TouchableOpacity style={styles.cell} onPress={() => handleRequest(item.id)} disabled={!item.dateLent ? true : false} >
+                            <EllipsisText>{item.dateLent || item.dateRequested && 'Lend'}</EllipsisText>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleReturn(item.id)} disabled={!item.dateRequested ? true : false}>
-                            <EllipsisText style={styles.cell}>{item.dateLent && !item.dateReturned ?  'Return' : item.dateReturned }</EllipsisText>
+
+                        <TouchableOpacity style={styles.cell} onPress={() => handleReturn(item.id)} disabled={!item.dateRequested ? true : false}>
+                            <EllipsisText>{item.dateLent && !item.dateReturned ? 'Return' : item.dateReturned}</EllipsisText>
                         </TouchableOpacity>
-                        <EllipsisText style={styles.cell}>{isAdmin ? 'Edit' : ''}</EllipsisText>
-                        <TouchableOpacity onPress={() => deleteLogs([item.id])}>
-                            <EllipsisText style={styles.cell}>{isAdmin ? 'Delete' : ''}</EllipsisText>
+
+                        <TouchableOpacity style={styles.cell} onPress={() => handleEdit()}>
+                             <EllipsisText>{isAdmin ? 'Edit' : ''}</EllipsisText>
+                        </TouchableOpacity>
+                       
+
+                        <TouchableOpacity style={styles.cell} onPress={() => deleteLogs([item.id])}>
+                            <EllipsisText>{isAdmin ? 'Delete' : ''}</EllipsisText>
                         </TouchableOpacity>
                     </View>
                 )}

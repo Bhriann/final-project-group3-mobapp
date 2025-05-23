@@ -17,6 +17,8 @@ export default function UserTabs() {
       initialRouteName="UserScreen"
       screenOptions={{
         headerShown: false,
+        tabBarActiveTintColor: '#FFD327',
+        tabBarInactiveTintColor: 'gray',
       }}
     >
       <Tabs.Screen
@@ -25,7 +27,7 @@ export default function UserTabs() {
         options={{
           tabBarLabel: 'Library',
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'book' : 'book-outline'} size={24} color={focused ? '#007AFF' : 'gray'} />
+            <Ionicons name={focused ? 'book' : 'book-outline'} size={24} color={focused ? '#FFD327' : 'gray'} />
           ),
         }}
       />
@@ -36,7 +38,7 @@ export default function UserTabs() {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={focused ? '#007AFF' : 'gray'} />
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={focused ? '#FFD327' : 'gray'} />
           ),
         }}
       />

@@ -21,8 +21,9 @@ dayjs.locale('en');
 dayjs.extend(isBetween);
 
 export default function ReportsScreen() {
-   const navigation = useNavigation<NavigationProp>();
-  const { books, logs } = useContext(Context);
+
+  const navigation = useNavigation<NavigationProp>();
+  const { books, logs, setCurrentAccount} = useContext(Context);
 
   // State for filtered data
   const [filteredLogs, setFilteredLogs] = useState(logs);
@@ -48,6 +49,11 @@ export default function ReportsScreen() {
   const handleConfirmEndDate = (date: Date) => {
     setEndDate(date);
     setShowEndDatePicker(false);
+  };
+  //LOGOUT
+  const handleLogout = () => {
+    navigation.replace('Login');
+    setCurrentAccount("");
   };
 
   // Filter logs by date range
@@ -94,9 +100,23 @@ export default function ReportsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Reports</Text>
+      <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+        <Text style={styles.headerTitle}>REPORTS</Text>
+        <TouchableOpacity
+          onPress={() => { handleLogout }}
+          style={{
+            backgroundColor: 'red',
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 5,
+          }}
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>Logout</Text>
+        </TouchableOpacity>
+
       </View>
+
+
 
       <ScrollView contentContainerStyle={{ padding: 20 }}>
         {/* Date Range Picker Buttons */}

@@ -6,8 +6,6 @@ import dayjs from "dayjs";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 
-
-const { height } = Dimensions.get('window');
 const BookPage = () => {
   const navigation = useNavigation();
   const { toggleFavorite, favoriteBooksList, selectedBook, books, logs, currentAccount, updateBooks, setLogs, users, admin, librarians } = useContext(Context);

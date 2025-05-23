@@ -12,7 +12,7 @@ import { NavigationProp } from '../../props and context/navprops';
 
 export default function ProfileScreen() {
   const navigation = useNavigation<NavigationProp>();
-  const { books, currentAccount, setSelectedBookId, favoriteBooksList, borrowHistory, users } = useContext(Context);
+  const { books, currentAccount, setSelectedBookId, setCurrentAccount, favoriteBooksList, borrowHistory, users } = useContext(Context);
 
   const [borrowHistoryObjects, setBorrowHistoryObjects] = useState<Book[]>([]);
   const [bookRequestObjects, setBookRequestObjects] = useState<Book[]>([]);
@@ -29,6 +29,7 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     navigation.navigate('Login');
+    setCurrentAccount("");
   };
 
   const handleBookOnPress = (item: string) => { setSelectedBookId(item); navigation.navigate('BookPage') }

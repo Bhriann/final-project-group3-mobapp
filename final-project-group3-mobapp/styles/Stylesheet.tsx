@@ -1,6 +1,5 @@
-import { StyleSheet } from "react-native";
-import ProfileScreen from "../screens/User/ProfileScreen";
 
+import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
 
   container: { flex: 1 },
@@ -65,27 +64,24 @@ export const styles = StyleSheet.create({
 
   buttonContainer: {
     backgroundColor: '#2A53A0',
-    marginVertical: 20,
-    paddingVertical: 10,
-    marginHorizontal: 20,
+    paddingVertical:10,
+    paddingHorizontal:20,
     borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop:20,
+    justifyContent:'center',
+    alignItems:'center'
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily:"Grotesk_Medium"
   },
 
   showButtonText: {
     color: '#2A53A0',
     fontWeight: 'bold',
     paddingRight: 10,
-    fontFamily: "Grotesk_Medium"
+  
   },
 
   sectionHeader: {
@@ -164,32 +160,51 @@ export const styles = StyleSheet.create({
   table_header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    backgroundColor: '#f8f8f8',
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
   },
-
   heading: {
     flex: 1,
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#333',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 10,
-    marginVertical: 1,
+    alignItems: 'center',
+    marginVertical: 4,
     backgroundColor: '#fff',
+    borderRadius: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
     elevation: 1,
-    borderRadius: 3,
   },
   cell: {
     flex: 1,
-    fontSize: 10,
-    textAlign: 'left',
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#555',
+    padding: 4,
+  },
+  actionCell: {
+    flex: 1,
+    textAlign: 'center',
+    alignItems: 'center',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: 40,
+  },
+  scrollLib: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   scrollInfo: {
     justifyContent: 'center',
@@ -200,10 +215,10 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   emptyProfile: {
-    fontFamily:"Grotesk_Regular",
+    fontFamily: "Grotesk_Regular",
     paddingBottom: 20
   },
-   profileSection: {
+  profileSection: {
     paddingBottom: 30
   },
 
@@ -267,6 +282,7 @@ export const styles = StyleSheet.create({
   dismissButtonText: {
     color: '#333',
     fontWeight: 'bold',
+   
   },
   continueButton: {
     backgroundColor: '#007AFF',
