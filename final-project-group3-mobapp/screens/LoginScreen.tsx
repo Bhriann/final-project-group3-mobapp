@@ -1,93 +1,135 @@
-import React, { useState } from 'react';
-import { SafeAreaView, Text, TextInput, View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../App';
+import React, { useContext, useState } from 'react';
+import { SafeAreaView, Text, View, Alert, TouchableOpacity, TextInput, Image, useWindowDimensions, KeyboardAvoidingView, Platform, ScrollView, } from 'react-native';
 
-type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
-};
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+// Context & Styles
+import { Context } from '../props and context/context';
+import { styles } from '../styles/Stylesheet';
 
-  const handleLogin = () => {
-    if (email === 'admin@example.com' && password === 'admin123') {
-      navigation.navigate('Admin');
-    } else if (email === 'librarian@example.com' && password === 'lib123') {
-      navigation.navigate('Librarian');
-    } else if (email === 'user@example.com' && password === 'user123') {
-      navigation.navigate('User');
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '../props and context/navprops';
+
+export default function LoginScreen() {
+
+  const navigation = useNavigation<NavigationProp>();
+
+  const { admin, users, librarians, setCurrentAccount } = useContext(Context);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email').required('Email is required'),
+    password: Yup.string().required('Password is required'),
+  });
+
+  const handleLogin = (values: { email: string; password: string }) => {
+    const { email, password } = values;
+
+    const foundAdmin = admin.find((acc) => acc.email === email && acc.password === password);
+    const foundLibrarian = librarians.find((acc) => acc.email === email && acc.password === password);
+    const foundUser = users.find((acc) => acc.email === email && acc.password === password);
+
+
+    if (foundAdmin) {
+      setCurrentAccount(foundAdmin.id);
+      navigation.replace('Admin');
+    } else if (foundLibrarian) {
+      setCurrentAccount(foundLibrarian.id);
+      navigation.replace('Librarian');
+    } else if (foundUser) {
+      setCurrentAccount(foundUser.id);
+      navigation.replace('User');
     } else {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
-
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Library Login</Text>
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        autoCapitalize="none"
-        onChangeText={setEmail}
-        value={email}
-      />
-      <TextInput
-        placeholder="Password"
-        style={styles.input}
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={[styles.container, { paddingRight: 20, paddingLeft: isLandscape ? 60 : 20, backgroundColor: "#FFEFCA" }]}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="always"
+          bounces={true}
+        >
+          <Image
+            source={require('../images/LibriLogo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Log In</Text>
+
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={LoginSchema}
+            onSubmit={handleLogin}
+          >
+            {({ handleChange, handleBlur, handleSubmit, dirty, values, errors, touched, isValid, submitCount }) => (
+              <>
+                <View style={styles.input}>
+                  <TextInput
+                    placeholder="Email"
+                    placeholderTextColor="#888"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                    style={styles.inputText}
+                  />
+                </View>
+
+                {errors.email && touched.email && (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                )}
+
+                {/* Password */}
+                <View style={styles.input}>
+                  <TextInput
+                    placeholder="Password"
+                    placeholderTextColor="#888"
+                    secureTextEntry={!showPassword}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                   style={styles.inputText}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                    <Text style={styles.showButtonText}>{showPassword ? 'Hide' : 'Show'}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {errors.password && touched.password && (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                )}
+
+                {/* Submit Button */}
+                <TouchableOpacity
+                  style={[
+                    styles.buttonContainer, {}
+                  ]}
+                  onPress={() => isValid && handleSubmit()}
+                >
+                  <Text style={styles.buttonText}>Log In</Text>
+                </TouchableOpacity>
+
+                 {dirty && submitCount>0 && (
+                                  <Text style={styles.errorText}>Please resolve the errors first!</Text>
+                                )}
+
+                <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                  <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </Formik>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
-
-export default LoginScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-  },
-  buttonContainer: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
-    borderRadius: 5,
-    width: '90%',
-    maxWidth: 400,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
 

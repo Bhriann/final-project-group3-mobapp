@@ -1,29 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, StatusBar, SafeAreaView, useWindowDimensions } from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
+
+// Navigation
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+// Context
+import { ContextProvider } from './props and context/context';
+
+// Screens
 import LoginScreen from './screens/LoginScreen';
-import AdminScreen from './screens/AdminScreen';
-import LibrarianScreen from './screens/LibrarianScreen';
-import UserScreen from './screens/UserScreen';
+import SignUpScreen from './screens/SignUpScreen';
+import AddBookScreen from './screens/Librarian/Admin/AddBookScreen';
+import BookPage  from './screens/User/BookPage';
+import LoadingScreen from './screens/LoadingScreen';
+import {RootStackParamList} from './props and context/navprops';
+import AdminTabs from './Tabs/AdminTabs';
+import LibrarianTabs from './Tabs/LibrarianTabs';
+import UserTabs from './Tabs/UserTabs';
+import AddLogScreen from './screens/Librarian/Admin/AddLogScreen';
+import AddAccountScreen from './screens/Librarian/Admin/AddAccountScreen';
+const Stack = createNativeStackNavigator();
 
-export type RootStackParamList = {
-  Login: undefined;
-  Admin: undefined;
-  Librarian: undefined;
-  User: undefined;
-};
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
-
+// --- Main App Component ---
 export default function App() {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Admin" component={AdminScreen} />
-        <Stack.Screen name="Librarian" component={LibrarianScreen} />
-        <Stack.Screen name="User" component={UserScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight }}>
+      <ContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+            {/* Auth */}
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+
+            {/* Tab Stacks */}
+            <Stack.Screen name="Admin" component={AdminTabs} />
+            <Stack.Screen name="Librarian" component={LibrarianTabs} />
+            <Stack.Screen name="User" component={UserTabs} />
+
+            {/* Standalone Screens */}
+            <Stack.Screen name="AddBook" component={AddBookScreen} />
+            <Stack.Screen name="BookPage" component={BookPage} />
+            <Stack.Screen name="AddLog" component={AddLogScreen} />
+            <Stack.Screen name="AddAccount" component={AddAccountScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ContextProvider>
+    </SafeAreaView>
   );
 }

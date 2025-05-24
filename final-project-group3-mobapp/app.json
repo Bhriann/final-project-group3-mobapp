@@ -4,6 +4,16 @@
     "slug": "final-project-group3-mobapp",
     "version": "1.0.0",
     "orientation": "portrait",
+    "plugins": [
+      [
+        "expo-screen-orientation",
+        {
+          "requiresFullScreen": true,
+          "initialOrientation": "portrait"
+        }
+      ],
+      "expo-font"
+    ],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
